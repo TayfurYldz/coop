@@ -456,8 +456,6 @@ export default class QueueOperations {
     if (queueId === defaultQueueId) {
       throw makeUnableToDeleteDefaultQueueError({ shouldErrorSpan: true });
     }
-    const queue = await this.bullQueues.get({ orgId, queueId });
-
     let numDeletedRows: bigint;
     try {
       numDeletedRows = await this.transactionWithRetry(async (transaction) => {
@@ -518,6 +516,10 @@ export default class QueueOperations {
     }
 
     if (numDeletedRows === 1n) {
+      // Only after the row is confirmed gone: a queue id that matched nothing
+      // would otherwise register a Bull handle for a queue that never existed,
+      // and the `#forgetBullResources` below is skipped on that path.
+      const queue = await this.bullQueues.get({ orgId, queueId });
       try {
         await queue.obliterate({ force: true });
       } catch (e) {
