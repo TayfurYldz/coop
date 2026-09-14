@@ -80,6 +80,12 @@ describe('QueueOperations', () => {
         queue,
         kyselyPg: deps.KyselyPg,
         mrtService: deps.ManualReviewToolService,
+        // Bull queues live in Redis, which the transaction rollback can't
+        // reach. Obliterate everything this org created — including queues a
+        // test made directly — while the rows still exist to enumerate them.
+        async cleanup() {
+          await deps.ManualReviewToolService.deleteAllQueuesForOrg(org.id);
+        },
       };
     });
 
@@ -274,10 +280,22 @@ describe('QueueOperations', () => {
         return { org, user, queue };
       };
 
+      const attacker = await buildOrg();
+      const victim = await buildOrg();
+
       return {
-        attacker: await buildOrg(),
-        victim: await buildOrg(),
+        attacker,
+        victim,
         mrtService: deps.ManualReviewToolService,
+        // Bull queues live in Redis, which the transaction rollback can't
+        // reach. Obliterate everything this org created — including queues a
+        // test made directly — while the rows still exist to enumerate them.
+        async cleanup() {
+          await Promise.all([
+            deps.ManualReviewToolService.deleteAllQueuesForOrg(attacker.org.id),
+            deps.ManualReviewToolService.deleteAllQueuesForOrg(victim.org.id),
+          ]);
+        },
       };
     });
 
