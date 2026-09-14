@@ -144,20 +144,26 @@ const bullResourceKey = (key: QueueKey) => `${key.orgId}:${key.queueId}`;
  * process jobs, and a few long-lived queue object references that are used to
  * push jobs to those workers) and how we use it in MRT, where users -- not an
  * automatic worker -- manually dequeue jobs and mark them complete, and where
- * there are many, many queues (not all of which we want to keep references to
- * in memory or connected to Redis at all times).
+ * there are many, many queues.
+ *
+ * Those Queue and Worker objects live in a KeyedResourceRegistry for this
+ * service's lifetime, and must not be expired or evicted: a Worker owns its
+ * queue's stalled-job checker, so dropping one stops abandoned jobs from being
+ * recovered on that queue until something requests it again.
+ *
+ * Holding them is cheap. `autorun` is false and nothing calls `run()`, so
+ * BullMQ never opens a per-Worker blocking connection; the only per-queue cost
+ * is one stalled-check timer.
  *
  * As part of handling that mismatch, this class exposes an API that solely
  * accepts and returns plain data values, as opposed to the stateful
- * Queue/Worker/Job objects that Bull usually deals with. While this
- * occasionally adds some overhead, that overhead is minimized by smart caching
- * internally, and this sort of API also makes the class much easier to mock.
+ * Queue/Worker/Job objects that Bull usually deals with. That costs a little
+ * overhead, and makes the class much easier to mock.
  */
 export default class QueueOperations {
-  // Bull Queues and Workers are live resources holding Redis connections, not
-  // cached values: a Worker owns the stalled-job checker for its queue. They're
-  // created on first use and kept until the queue is deleted or this service
-  // shuts down. See KeyedResourceRegistry for why they aren't in `cached()`.
+  // Live resources, not cached values: a Worker owns the stalled-job checker
+  // for its queue. Created on first use, kept until the queue is deleted or
+  // this service shuts down.
   private readonly bullQueues: KeyedResourceRegistry<
     QueueKey,
     Awaited<ReturnType<typeof getOrCreateBullQueue<StoredManualReviewJob>>>
@@ -211,10 +217,6 @@ export default class QueueOperations {
 
   /**
    * Drops the Bull Queue/Worker handles for a queue that no longer exists.
-   *
-   * Previously nothing did this: `deleteManualReviewQueue` obliterated the Bull
-   * queue but left the cached Queue object in place, so until its TTL expired
-   * the service held a handle to an obliterated queue.
    */
   async #forgetBullResources(key: QueueKey) {
     await Promise.all([

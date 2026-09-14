@@ -2,21 +2,12 @@
  * A lazily-populated registry of keyed, long-lived resources that hold a
  * connection (or similar handle) and must be explicitly closed.
  *
- * This exists because `cached()` was being used for the job: BullMQ `Queue` and
- * `Worker` objects were held in an in-memory cache with a TTL and a 128-entry
- * LRU whose eviction callback called `close()`. A cache is the wrong contract
- * for these:
- *
- * - A cache entry is a *copy* of something derivable, discardable at any time.
- *   A `Worker` is not a copy of anything, it is the thing doing the work.
- * - A TTL implies the value goes stale. These don't; the TTL just tore down and
- *   rebuilt job processing on a timer.
- * - LRU eviction bounds memory. Here it meant the (N+1)th active queue silently
- *   closed the least-recently-used queue's worker, stopping its stalled-job
- *   checker until something happened to request that queue again.
- *
- * So: no TTL, no size limit. Entries live until removed explicitly (the
- * resource's underlying subject is gone) or until the owner closes.
+ * Entries are created on first request and live until removed explicitly —
+ * because the resource's subject is gone — or until the owner closes. There is
+ * deliberately no TTL and no size limit: these are not cached values that can
+ * be discarded and recomputed on demand, they are the resources themselves, so
+ * dropping one has whatever consequence closing it has. Use a cache if the
+ * value is a derivable copy; use this if it is the thing itself.
  *
  * The map stores the in-flight promise rather than the resolved value, so
  * concurrent `get()` calls for the same key share a single creation instead of
