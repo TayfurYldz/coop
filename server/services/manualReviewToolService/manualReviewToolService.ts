@@ -1092,6 +1092,15 @@ export class ManualReviewToolService {
     );
   }
 
+  /**
+   * Tears down every review queue belonging to an org, including its Bull
+   * queues in Redis. Needed by any org-deletion path: deleting the org row
+   * alone leaves both the queue rows and their Redis keys behind. See #1192.
+   */
+  async deleteAllQueuesForOrg(orgId: string) {
+    return this.queueOps.deleteAllQueuesForOrg(orgId);
+  }
+
   async getJobsForQueue(opts: {
     orgId: string;
     queueId: string;

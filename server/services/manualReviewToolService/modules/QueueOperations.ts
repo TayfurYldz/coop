@@ -115,6 +115,16 @@ export type QueueOperationsErrorType =
 type QueueKey = { orgId: string; queueId: string };
 
 /**
+ * Registry key for a queue's Bull resources.
+ *
+ * Org ids come from `uid()` and queue ids from `uuidv1()`, so neither can
+ * contain a colon. That matters: a separator appearing inside an id would
+ * collide two different (org, queue) pairs onto one entry, handing two orgs
+ * the same Worker. Revisit if either id format changes.
+ */
+const bullResourceKey = (key: QueueKey) => `${key.orgId}:${key.queueId}`;
+
+/**
  * This class handles everything that MRT does directly with queues: CRUDing
  * them, enqueuing and dequeueing jobs on a given queue, looking up jobs within
  * a given queue, etc. It does not deal with routing jobs to queues or forming
@@ -176,28 +186,26 @@ export default class QueueOperations {
   ) {
     this.transactionWithRetry = makeKyselyTransactionWithRetry(this.pgQuery);
 
-    const keyToString = (key: QueueKey) => jsonStringify(key);
-
     this.bullWorkers = new KeyedResourceRegistry({
       create: async (key) => getBullWorker<StoredManualReviewJob>(redis, key),
-      keyToString,
+      keyToString: bullResourceKey,
     });
 
     this.bullQueues = new KeyedResourceRegistry({
       create: async (key) =>
         getOrCreateBullQueue<StoredManualReviewJob>(redis, key),
-      keyToString,
+      keyToString: bullResourceKey,
     });
 
     this.bullAppealWorkers = new KeyedResourceRegistry({
       create: async (key) => getBullWorker<ManualReviewAppealJob>(redis, key),
-      keyToString,
+      keyToString: bullResourceKey,
     });
 
     this.bullAppealQueues = new KeyedResourceRegistry({
       create: async (key) =>
         getOrCreateBullQueue<ManualReviewAppealJob>(redis, key),
-      keyToString,
+      keyToString: bullResourceKey,
     });
   }
 
@@ -531,10 +539,14 @@ export default class QueueOperations {
     return numDeletedRows === 1n;
   }
 
-  async deleteManualReviewQueueForTestsDO_NOT_USE(
-    orgId: string,
-    queueId: string,
-  ) {
+  /**
+   * Deletes one queue without the default-queue guard: obliterates its Bull
+   * queue, deletes the rows, and drops our local handles.
+   *
+   * Shared by the test-only single-queue helper and by org-wide teardown, both
+   * of which need to remove queues that `deleteManualReviewQueue` refuses.
+   */
+  async #deleteQueueUnguarded(orgId: string, queueId: string) {
     const queue = await this.bullQueues.get({ orgId, queueId });
 
     await queue.obliterate({ force: true });
@@ -580,6 +592,38 @@ export default class QueueOperations {
     await this.#forgetBullResources({ orgId, queueId });
 
     return numDeletedRows === 1n;
+  }
+
+  async deleteManualReviewQueueForTestsDO_NOT_USE(
+    orgId: string,
+    queueId: string,
+  ) {
+    return this.#deleteQueueUnguarded(orgId, queueId);
+  }
+
+  /**
+   * Tears down every review queue belonging to an org, default queue included:
+   * obliterates each Bull queue, deletes the rows, and drops local handles.
+   *
+   * `manual_review_tool.manual_review_queues` has no foreign key to
+   * `public.orgs`, so deleting an org leaves both the rows and their Redis keys
+   * behind. Even with such a key, a Postgres cascade could not obliterate the
+   * Bull queues — that has to happen here. See #1192.
+   *
+   * Returns the number of queues found and torn down.
+   */
+  async deleteAllQueuesForOrg(orgId: string) {
+    const queues =
+      await this.getAllQueuesForOrgAndDangerouslyBypassPermissioning(orgId);
+
+    // Serial rather than concurrent: each teardown obliterates a Bull queue and
+    // runs its own transaction, and all of an org's queues share one Redis
+    // connection.
+    for (const queue of queues) {
+      await this.#deleteQueueUnguarded(orgId, queue.id);
+    }
+
+    return queues.length;
   }
 
   async getDefaultQueueIdForOrg(orgId: string) {

@@ -497,4 +497,40 @@ describe('QueueOperations', () => {
         'block-appeals-rule',
       ),
   );
+
+  testWithQueueAndActions()(
+    'deleteAllQueuesForOrg removes every queue belonging to the org',
+    async ({ org, user, mrtService, kyselyPg }) => {
+      const extraQueue = await mrtService.createManualReviewQueue({
+        name: `org-teardown-queue-${uid()}`,
+        description: null,
+        userIds: [user.id],
+        hiddenActionIds: [],
+        isAppealsQueue: false,
+        invokedBy: {
+          userId: user.id,
+          permissions: [UserPermission.EDIT_MRT_QUEUES],
+          orgId: org.id,
+        },
+      });
+
+      const queueIdsForOrg = async () =>
+        (
+          await kyselyPg
+            .selectFrom('manual_review_tool.manual_review_queues')
+            .select('id')
+            .where('org_id', '=', org.id)
+            .execute()
+        ).map((it) => it.id);
+
+      const before = await queueIdsForOrg();
+      expect(before).toContain(extraQueue.id);
+
+      // Removes the org's queues regardless of which is the default, which
+      // `deleteManualReviewQueue` refuses to touch.
+      const removed = await mrtService.deleteAllQueuesForOrg(org.id);
+      expect(removed).toBe(before.length);
+      expect(await queueIdsForOrg()).toEqual([]);
+    },
+  );
 });
