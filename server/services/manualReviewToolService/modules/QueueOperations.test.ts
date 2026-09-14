@@ -84,7 +84,7 @@ describe('QueueOperations', () => {
         // reach. Obliterate everything this org created — including queues a
         // test made directly — while the rows still exist to enumerate them.
         async cleanup() {
-          await deps.ManualReviewToolService.deleteAllQueuesForOrg(org.id);
+          await deps.ManualReviewToolService.obliterateAllQueuesForOrg(org.id);
         },
       };
     });
@@ -292,8 +292,12 @@ describe('QueueOperations', () => {
         // test made directly — while the rows still exist to enumerate them.
         async cleanup() {
           await Promise.all([
-            deps.ManualReviewToolService.deleteAllQueuesForOrg(attacker.org.id),
-            deps.ManualReviewToolService.deleteAllQueuesForOrg(victim.org.id),
+            deps.ManualReviewToolService.obliterateAllQueuesForOrg(
+              attacker.org.id,
+            ),
+            deps.ManualReviewToolService.obliterateAllQueuesForOrg(
+              victim.org.id,
+            ),
           ]);
         },
       };
@@ -517,7 +521,7 @@ describe('QueueOperations', () => {
   );
 
   testWithQueueAndActions()(
-    'deleteAllQueuesForOrg removes every queue belonging to the org',
+    'obliterateAllQueuesForOrg clears Bull state and leaves the rows alone',
     async ({ org, user, mrtService, kyselyPg }) => {
       const extraQueue = await mrtService.createManualReviewQueue({
         name: `org-teardown-queue-${uid()}`,
@@ -544,11 +548,14 @@ describe('QueueOperations', () => {
       const before = await queueIdsForOrg();
       expect(before).toContain(extraQueue.id);
 
-      // Removes the org's queues regardless of which is the default, which
+      // Covers every queue the org has, including the default one that
       // `deleteManualReviewQueue` refuses to touch.
-      const removed = await mrtService.deleteAllQueuesForOrg(org.id);
-      expect(removed).toBe(before.length);
-      expect(await queueIdsForOrg()).toEqual([]);
+      const obliterated = await mrtService.obliterateAllQueuesForOrg(org.id);
+      expect(obliterated).toBe(before.length);
+
+      // The Postgres rows are deliberately untouched: this only clears the
+      // Bull state in Redis, which a caller's transaction cannot reach.
+      expect(await queueIdsForOrg()).toEqual(before);
     },
   );
 });

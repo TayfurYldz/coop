@@ -1093,12 +1093,13 @@ export class ManualReviewToolService {
   }
 
   /**
-   * Tears down every review queue belonging to an org, including its Bull
-   * queues in Redis. Needed by any org-deletion path: deleting the org row
-   * alone leaves both the queue rows and their Redis keys behind. See #1192.
+   * Obliterates the Bull queue behind every one of an org's review queues,
+   * leaving the Postgres rows alone. For callers that discard their database
+   * writes some other way but still need the Redis side cleaned up, since no
+   * Postgres transaction can reach it.
    */
-  async deleteAllQueuesForOrg(orgId: string) {
-    return this.queueOps.deleteAllQueuesForOrg(orgId);
+  async obliterateAllQueuesForOrg(orgId: string) {
+    return this.queueOps.obliterateAllQueuesForOrg(orgId);
   }
 
   async getJobsForQueue(opts: {

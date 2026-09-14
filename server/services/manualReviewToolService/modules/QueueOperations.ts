@@ -541,14 +541,10 @@ export default class QueueOperations {
     return numDeletedRows === 1n;
   }
 
-  /**
-   * Deletes one queue without the default-queue guard: obliterates its Bull
-   * queue, deletes the rows, and drops our local handles.
-   *
-   * Shared by the test-only single-queue helper and by org-wide teardown, both
-   * of which need to remove queues that `deleteManualReviewQueue` refuses.
-   */
-  async #deleteQueueUnguarded(orgId: string, queueId: string) {
+  async deleteManualReviewQueueForTestsDO_NOT_USE(
+    orgId: string,
+    queueId: string,
+  ) {
     const queue = await this.bullQueues.get({ orgId, queueId });
 
     await queue.obliterate({ force: true });
@@ -596,33 +592,29 @@ export default class QueueOperations {
     return numDeletedRows === 1n;
   }
 
-  async deleteManualReviewQueueForTestsDO_NOT_USE(
-    orgId: string,
-    queueId: string,
-  ) {
-    return this.#deleteQueueUnguarded(orgId, queueId);
-  }
-
   /**
-   * Tears down every review queue belonging to an org, default queue included:
-   * obliterates each Bull queue, deletes the rows, and drops local handles.
+   * Obliterates the Bull queue backing every review queue an org has and drops
+   * the local handles, leaving the Postgres rows untouched.
    *
-   * `manual_review_tool.manual_review_queues` has no foreign key to
-   * `public.orgs`, so deleting an org leaves both the rows and their Redis keys
-   * behind. Even with such a key, a Postgres cascade could not obliterate the
-   * Bull queues — that has to happen here. See #1192.
+   * For callers that discard their database writes by some other means but
+   * still need the Redis side cleaned up, since no Postgres transaction can
+   * reach it — a test rolling back its own transaction, say.
    *
-   * Returns the number of queues found and torn down.
+   * Enumerates with a plain read and opens no transaction of its own, so it is
+   * safe to call alongside other in-flight database work.
+   *
+   * Returns the number of queues obliterated.
    */
-  async deleteAllQueuesForOrg(orgId: string) {
+  async obliterateAllQueuesForOrg(orgId: string) {
     const queues =
       await this.getAllQueuesForOrgAndDangerouslyBypassPermissioning(orgId);
 
-    // Serial rather than concurrent: each teardown obliterates a Bull queue and
-    // runs its own transaction, and all of an org's queues share one Redis
-    // connection.
+    // Serial: an org's queues share one Redis connection.
     for (const queue of queues) {
-      await this.#deleteQueueUnguarded(orgId, queue.id);
+      const key = { orgId, queueId: queue.id };
+      const bullQueue = await this.bullQueues.get(key);
+      await bullQueue.obliterate({ force: true });
+      await this.#forgetBullResources(key);
     }
 
     return queues.length;
