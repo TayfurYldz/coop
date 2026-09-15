@@ -515,7 +515,7 @@ describe('QueueOperations job priorities', () => {
 
   testWithQueue()(
     'deleteAllJobsFromQueue clears the oldest job cache',
-    async ({ org, queue, _user, mrtService }) => {
+    async ({ org, queue, mrtService }) => {
       const queueOps = mrtService['queueOps'];
       const payloadFor = makePayloadFor(uid());
 
@@ -582,7 +582,7 @@ describe('QueueOperations job priorities', () => {
           getPriorities: async (itemIds) =>
             new Map(itemIds.map((id) => [id, 500])),
         }),
-      ).resolves.not.toThrow();
+      ).resolves.toBeUndefined();
     },
   );
 });

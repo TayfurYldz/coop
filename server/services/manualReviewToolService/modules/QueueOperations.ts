@@ -532,6 +532,7 @@ export default class QueueOperations {
     if (numDeletedRows === 1n) {
       try {
         await queue.obliterate({ force: true });
+        this.#oldestJobHeaps.delete(`${orgId}:${queueId}`);
       } catch (e) {
         // The DB row is already gone at this point, so a retry would see
         // numDeletedRows === 0n and skip obliterate() entirely, silently
@@ -554,6 +555,7 @@ export default class QueueOperations {
     const queue = await this.getOrCreateBullQueue({ orgId, queueId });
 
     await queue.obliterate({ force: true });
+    this.#oldestJobHeaps.delete(`${orgId}:${queueId}`);
 
     // See `deleteManualReviewQueue` for why this is serialized + ownership-
     // checked. Same pattern, just without the default-queue guard.
@@ -902,6 +904,13 @@ export default class QueueOperations {
         ...(priority != null && { priority }),
       },
     );
+
+    this.#insertIntoOldestJobHeap({
+      orgId,
+      queueId,
+      bullJobId,
+      createdAt,
+    });
 
     // Again, because new job data comes in in the non-legacy format, it's safe
     // to cast.
@@ -1837,6 +1846,26 @@ export default class QueueOperations {
     const idx = heap.findIndex((e) => e.bullJobId === opts.bullJobId);
     if (idx !== -1) {
       heap.splice(idx, 1);
+    }
+  }
+
+  #insertIntoOldestJobHeap(opts: {
+    orgId: string;
+    queueId: string;
+    bullJobId: string;
+    createdAt: Date;
+  }): void {
+    const heapKey = `${opts.orgId}:${opts.queueId}`;
+    const heap = this.#oldestJobHeaps.get(heapKey);
+    if (heap == null) return;
+    const entry: OldestJobEntry = {
+      bullJobId: opts.bullJobId,
+      createdAt: opts.createdAt,
+    };
+    heap.push(entry);
+    heap.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    if (heap.length > OLDEST_JOB_HEAP_SIZE) {
+      heap.length = OLDEST_JOB_HEAP_SIZE;
     }
   }
 
