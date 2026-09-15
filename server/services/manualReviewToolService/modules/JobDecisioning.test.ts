@@ -1,4 +1,8 @@
-import { parseItemCreatedAt } from './JobDecisioning.js';
+import {
+  actionableRelatedActions,
+  parseItemCreatedAt,
+  relatedActionPublishPayloads,
+} from './JobDecisioning.js';
 
 describe('parseItemCreatedAt', () => {
   test('parses a valid ISO string', () => {
@@ -37,4 +41,70 @@ describe('parseItemCreatedAt', () => {
       expect(parseItemCreatedAt(value)).toBeNull();
     },
   );
+});
+
+describe('relatedActionPublishPayloads', () => {
+  test('attaches saved parameter values to each related action', () => {
+    expect(
+      relatedActionPublishPayloads({
+        actionIds: ['enqueue_human'],
+        itemIds: ['post_2'],
+        itemTypeId: 'content',
+        policyIds: ['policy_abuse'],
+        actionIdsToMrtApiParamDecisionPayload: {
+          enqueue_human: { queue: 'priority' },
+        },
+      }),
+    ).toEqual([
+      {
+        actionId: 'enqueue_human',
+        customMrtApiParamDecisionPayload: { queue: 'priority' },
+      },
+    ]);
+  });
+
+  test('omits parameter payload when none were provided', () => {
+    expect(
+      relatedActionPublishPayloads({
+        actionIds: ['hide_content'],
+        itemIds: ['post_1'],
+        itemTypeId: 'content',
+        policyIds: ['policy_spam'],
+      }),
+    ).toEqual([{ actionId: 'hide_content' }]);
+  });
+});
+
+describe('actionableRelatedActions', () => {
+  test('keeps only related items that have an action and a target', () => {
+    expect(
+      actionableRelatedActions([
+        {
+          actionIds: [],
+          itemIds: ['post_unmarked'],
+          itemTypeId: 'content',
+          policyIds: [],
+        },
+        {
+          actionIds: ['hide_content'],
+          itemIds: [],
+          itemTypeId: 'content',
+          policyIds: ['policy_spam'],
+        },
+        {
+          actionIds: ['hide_content'],
+          itemIds: ['post_1'],
+          itemTypeId: 'content',
+          policyIds: ['policy_spam'],
+        },
+      ]),
+    ).toEqual([
+      {
+        actionIds: ['hide_content'],
+        itemIds: ['post_1'],
+        itemTypeId: 'content',
+        policyIds: ['policy_spam'],
+      },
+    ]);
+  });
 });

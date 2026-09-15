@@ -471,7 +471,7 @@ export function ManualReviewJobThreadComponent(props: {
           {selectedMessages.length > 0 && (
             <>
               <div className="mt-2 font-bold">
-                Action on all selected messages above
+                Action on all authors of selected messages above
               </div>
               <ManualReviewJobRelatedActionsButtonPanel
                 actions={allActions.filter((it) => {
@@ -546,6 +546,64 @@ export function ManualReviewJobThreadComponent(props: {
                           itemTypeId: author.typeId,
                         },
                         displayName: author.name ?? author.id,
+                      },
+                    })),
+                  );
+                }}
+                requirePolicySelection={requirePolicySelectionToEnqueueAction}
+                allowMoreThanOnePolicySelection={
+                  allowMoreThanOnePolicySelection
+                }
+              />
+            </>
+          )}
+          {selectedMessages.length > 0 && (
+            <>
+              <div className="mt-2 font-bold">
+                Action on all selected messages above
+              </div>
+              <ManualReviewJobRelatedActionsButtonPanel
+                actions={allActions.filter((it) => {
+                  const allSelectedItemTypeIds = filterNullOrUndefined(
+                    uniq(selectedMessages.map((message) => message.type.id)),
+                  );
+                  return it.itemTypes.some((itemType) =>
+                    allSelectedItemTypeIds.includes(itemType.id),
+                  );
+                })}
+                allPolicies={allPolicies}
+                selectedPolicyIds={(action) => {
+                  const selectedItemIds = uniq(
+                    selectedMessages.map((message) => message.id),
+                  );
+
+                  return relatedActions
+                    .filter(
+                      (relatedAction) =>
+                        relatedAction.action.id === action.id &&
+                        selectedItemIds.includes(
+                          relatedAction.target.identifier.itemId,
+                        ),
+                    )
+                    .flatMap((relatedAction) =>
+                      relatedAction.policies.map((it) => it.id),
+                    );
+                }}
+                onChangeSelectedPolicies={(action, selectedPolicyIds) => {
+                  onEnqueueActions(
+                    selectedMessages.map((message) => ({
+                      action,
+                      policies: allPolicies.filter((policy) =>
+                        arrayFromArrayOrSingleItem(selectedPolicyIds).includes(
+                          policy.id,
+                        ),
+                      ),
+                      target: {
+                        identifier: {
+                          itemId: message.id,
+                          itemTypeId: message.type.id,
+                        },
+                        displayName: message.id,
                       },
                     })),
                   );

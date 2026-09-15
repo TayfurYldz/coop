@@ -52,7 +52,11 @@ import {
 } from '../../../../graphql/generated';
 import { filterNullOrUndefined } from '../../../../utils/collections';
 import { getFieldValueForRole } from '../../../../utils/itemUtils';
-import { recomputeSelectedRelatedActions } from '../../../../utils/manualReviewTool';
+import {
+  areRelatedActionsEqual,
+  recomputeSelectedRelatedActions,
+  relatedActionsToSubmitInput,
+} from '../../../../utils/manualReviewTool';
 import HTMLRenderer from '../../policies/HTMLRenderer';
 import { ITEM_TYPE_FRAGMENT } from '../../rules/rule_form/RuleForm';
 import { JOB_FRAGMENT } from './jobFragment';
@@ -348,16 +352,32 @@ function ManualReviewJobReviewImpl(props: {
 
   const actionStore = useContext(ManualReviewActionStore);
 
-  const setSelectedRelatedActions = (
-    actions: ManualReviewJobEnqueuedActionData[],
-  ) => {
-    actionStore?.setActions(
-      actions.map((it) => ({
-        itemId: it.target.identifier.itemId,
-        action: it.action,
-      })),
+  const setSelectedRelatedActions = useCallback(
+    (
+      actions:
+        | ManualReviewJobEnqueuedActionData[]
+        | ((
+            prev: ManualReviewJobEnqueuedActionData[],
+          ) => ManualReviewJobEnqueuedActionData[]),
+    ) => {
+      selectedRelatedActionsSetter((prev) => {
+        const next = typeof actions === 'function' ? actions(prev) : actions;
+        actionStore?.setActions(
+          next.map((it) => ({
+            itemId: it.target.identifier.itemId,
+            action: it.action,
+          })),
+        );
+        return next;
+      });
+    },
+    [actionStore],
+  );
+
+  const removeRelatedAction = (action: ManualReviewJobEnqueuedActionData) => {
+    setSelectedRelatedActions((prev) =>
+      prev.filter((enqueued) => !areRelatedActionsEqual(enqueued, action)),
     );
-    selectedRelatedActionsSetter(actions);
   };
 
   const { queueId, jobId, lockToken } = useParams<{
@@ -722,8 +742,8 @@ function ManualReviewJobReviewImpl(props: {
   const enqueueGate = useEnqueueActionGate({
     allActions: data?.myOrg?.actions ?? [],
     onEnqueueActions: (actions) =>
-      setSelectedRelatedActions(
-        recomputeSelectedRelatedActions(actions, selectedRelatedActions),
+      setSelectedRelatedActions((prev) =>
+        recomputeSelectedRelatedActions(actions, prev),
       ),
   });
 
@@ -1526,6 +1546,14 @@ function ManualReviewJobReviewImpl(props: {
             }
             allActions={closedJob ? [] : filteredActions}
             onEnqueueActions={enqueueGate.enqueueActions}
+            onRemoveAction={removeRelatedAction}
+            onEditParameters={(action) =>
+              enqueueGate.editParameters(
+                action,
+                selectedRelatedActions,
+                setSelectedRelatedActions,
+              )
+            }
             allPolicies={org.policies}
             allItemTypes={org.itemTypes as GQLItemType[]}
             relatedActions={selectedRelatedActions}
@@ -1551,6 +1579,14 @@ function ManualReviewJobReviewImpl(props: {
             }
             allActions={closedJob ? [] : filteredActions}
             onEnqueueActions={enqueueGate.enqueueActions}
+            onRemoveAction={removeRelatedAction}
+            onEditParameters={(action) =>
+              enqueueGate.editParameters(
+                action,
+                selectedRelatedActions,
+                setSelectedRelatedActions,
+              )
+            }
             allPolicies={org.policies}
             allItemTypes={org.itemTypes as GQLItemType[]}
             relatedActions={selectedRelatedActions}
@@ -1576,12 +1612,25 @@ function ManualReviewJobReviewImpl(props: {
             relatedActions={selectedRelatedActions}
             reportedUserRef={reportedUserRef}
             onEnqueueActions={enqueueGate.enqueueActions}
+            onRemoveAction={removeRelatedAction}
+            onEditParameters={(action) =>
+              enqueueGate.editParameters(
+                action,
+                selectedRelatedActions,
+                setSelectedRelatedActions,
+              )
+            }
             requirePolicySelectionToEnqueueAction={
               org.requiresPolicyForDecisionsInMrt
             }
             isActionable={!closedJob}
             allowMoreThanOnePolicySelection={org.allowMultiplePoliciesPerAction}
             jobCreatedAt={new Date(job.createdAt)}
+            additionalContentItems={
+              'additionalContentItems' in payload
+                ? payload.additionalContentItems
+                : undefined
+            }
           />
         );
     }
@@ -1717,8 +1766,8 @@ function ManualReviewJobReviewImpl(props: {
                   ),
                 }))}
                 onRemoveAction={(action) =>
-                  setSelectedRelatedActions([
-                    ...selectedRelatedActions.filter(
+                  setSelectedRelatedActions((prev) =>
+                    prev.filter(
                       (a) =>
                         !(
                           a.target.identifier.itemId === action.target.itemId &&
@@ -1727,7 +1776,7 @@ function ManualReviewJobReviewImpl(props: {
                           a.action.id === action.id
                         ),
                     ),
-                  ])
+                  )
                 }
                 onEditAction={(action) => {
                   const entry = selectedRelatedActions.find(
@@ -1933,15 +1982,8 @@ function ManualReviewJobReviewImpl(props: {
                           jobId: job.id,
                           lockToken: lockToken!,
                           reportedItemDecisionComponents: decisionComponents,
-                          relatedItemActions: selectedRelatedActions.map(
-                            (action) => ({
-                              actionIds: [action.action.id],
-                              itemIds: [action.target.identifier.itemId],
-                              itemTypeId: action.target.identifier.itemTypeId,
-                              policyIds: action.policies.map(
-                                (policy) => policy.id,
-                              ),
-                            }),
+                          relatedItemActions: relatedActionsToSubmitInput(
+                            selectedRelatedActions,
                           ),
                           decisionReason,
                         },

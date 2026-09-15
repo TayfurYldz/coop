@@ -38,7 +38,41 @@ export type ManualReviewDecisionRelatedAction = {
   itemIds: readonly string[];
   itemTypeId: string;
   policyIds: readonly string[];
+  actionIdsToMrtApiParamDecisionPayload?: JsonObject;
 };
+
+export function relatedActionPublishPayloads(
+  relatedAction: ManualReviewDecisionRelatedAction,
+): {
+  actionId: string;
+  customMrtApiParamDecisionPayload?: Record<string, string | boolean | unknown>;
+}[] {
+  const payloads = relatedAction.actionIdsToMrtApiParamDecisionPayload;
+  return relatedAction.actionIds
+    .filter((actionId) => actionId.length > 0)
+    .map((actionId) => ({
+      actionId,
+      ...(payloads?.[actionId] != null
+        ? {
+            customMrtApiParamDecisionPayload: payloads[actionId] as Record<
+              string,
+              string | boolean | unknown
+            >,
+          }
+        : {}),
+    }));
+}
+
+export function actionableRelatedActions(
+  relatedActions: readonly ManualReviewDecisionRelatedAction[],
+): ManualReviewDecisionRelatedAction[] {
+  return relatedActions.filter(
+    (relatedAction) =>
+      relatedAction.actionIds.some((id) => id.length > 0) &&
+      relatedAction.itemIds.some((id) => id.length > 0) &&
+      relatedAction.itemTypeId.length > 0,
+  );
+}
 
 export type NCMECReportedContentInThread = {
   contentId: string;

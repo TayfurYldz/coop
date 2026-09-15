@@ -2,6 +2,7 @@
 import _ from 'lodash';
 
 import { itemSubmissionWithTypeIdentifierToItemSubmission } from '../../services/itemProcessingService/index.js';
+import { actionableRelatedActions } from '../../services/manualReviewToolService/index.js';
 import { NCMECIncidentType as NCMECIncidentTypeValues } from '../../services/ncmecService/index.js';
 import { UserPermission } from '../../services/userManagementService/index.js';
 import {
@@ -2378,7 +2379,20 @@ const Mutation: GQLMutationResolvers = {
           jobId,
           lockToken,
           decisionComponents: decisionPayloads,
-          relatedActions: [...relatedItemActions],
+          relatedActions: actionableRelatedActions(
+            relatedItemActions.map((relatedAction) => ({
+              actionIds: [...relatedAction.actionIds],
+              itemIds: [...relatedAction.itemIds],
+              itemTypeId: relatedAction.itemTypeId,
+              policyIds: [...relatedAction.policyIds],
+              ...(relatedAction.actionIdsToMrtApiParamDecisionPayload != null
+                ? {
+                    actionIdsToMrtApiParamDecisionPayload:
+                      relatedAction.actionIdsToMrtApiParamDecisionPayload,
+                  }
+                : {}),
+            })),
+          ),
           reviewerId: userId,
           reviewerEmail: userEmail,
           orgId,

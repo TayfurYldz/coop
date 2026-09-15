@@ -116,8 +116,10 @@ import {
   type NormalizedItemData,
 } from '../services/itemProcessingService/index.js';
 import {
+  actionableRelatedActions,
   isReportJob,
   ManualReviewToolService,
+  relatedActionPublishPayloads,
   type ManualReviewAppealJobInput,
   type ManualReviewJobInput,
 } from '../services/manualReviewToolService/index.js';
@@ -1401,17 +1403,24 @@ export default async function getBottle() {
             }),
           );
 
-          // Publish any related actions
+          // Publish only related items the reviewer marked with an action.
+          // Lookup the latest submission so webhooks get full item data,
+          // falling back to the identifier if the item is not in investigation.
           const flattenedRelatedActions = relatedActions.flatMap((it) => {
-            return it.itemIds.map((itemId) => ({
-              ..._.omit(it, 'itemIds'),
-              itemId,
-            }));
+            if (!isNonEmptyArray(it.actionIds)) {
+              return [];
+            }
+            return it.itemIds
+              .filter((itemId) => itemId.length > 0)
+              .map((itemId) => ({
+                ..._.omit(it, 'itemIds'),
+                itemId,
+              }));
           });
           await Promise.all(
             flattenedRelatedActions.map(async (it) => {
               const { actionIds, policyIds, itemId, itemTypeId } = it;
-              if (!isNonEmptyArray(actionIds)) {
+              if (!isNonEmptyArray(actionIds) || itemId.length === 0) {
                 return;
               }
 
@@ -1423,20 +1432,43 @@ export default async function getBottle() {
               if (!itemType) {
                 return;
               }
-              const decisionActions = actionIds.map((actionId) => ({
-                actionId,
-              }));
+              const decisionActions = relatedActionPublishPayloads({
+                actionIds,
+                itemIds: [itemId],
+                itemTypeId,
+                policyIds,
+                actionIdsToMrtApiParamDecisionPayload:
+                  it.actionIdsToMrtApiParamDecisionPayload,
+              });
 
-              if (isNonEmptyArray(decisionActions)) {
-                await publishActions({
-                  decisionActions,
-                  policyIds,
-                  orgId,
-                  item: { itemId, itemType },
-                  actorId: reviewerId,
-                  actorEmail: reviewerEmail,
-                });
+              if (!isNonEmptyArray(decisionActions)) {
+                return;
               }
+
+              const itemSubmission =
+                await container.ItemInvestigationService.getItemByIdentifier({
+                  orgId,
+                  itemIdentifier: { id: itemId, typeId: itemTypeId },
+                  latestSubmissionOnly: true,
+                })
+                  .then((result) => result?.latestSubmission)
+                  .catch(() => undefined);
+
+              await publishActions({
+                decisionActions,
+                policyIds,
+                orgId,
+                item: itemSubmission ?? {
+                  itemId,
+                  itemType: {
+                    id: itemType.id,
+                    kind: itemType.kind,
+                    name: itemType.name,
+                  },
+                },
+                actorId: reviewerId,
+                actorEmail: reviewerEmail,
+              });
             }),
           );
         } finally {
@@ -1446,15 +1478,13 @@ export default async function getBottle() {
               ...decisionComponents.flatMap((decision) =>
                 decision.type === 'CUSTOM_ACTION' ? [decision] : [],
               ),
-              ...relatedActions
-                .filter((ra) => ra.actionIds.length > 0)
-                .map((ra) => ({
-                  type: 'CUSTOM_ACTION' as const,
-                  actions: ra.actionIds.map((id) => ({ id })),
-                  policies: ra.policyIds.map((id) => ({ id })),
-                  itemIds: [...ra.itemIds],
-                  itemTypeId: ra.itemTypeId,
-                })),
+              ...actionableRelatedActions(relatedActions).map((ra) => ({
+                type: 'CUSTOM_ACTION' as const,
+                actions: ra.actionIds.map((id) => ({ id })),
+                policies: ra.policyIds.map((id) => ({ id })),
+                itemIds: [...ra.itemIds],
+                itemTypeId: ra.itemTypeId,
+              })),
             ];
             if (customActions.length > 0) {
               container.ManualReviewToolService.maybeClearOtherReportsForUser({
