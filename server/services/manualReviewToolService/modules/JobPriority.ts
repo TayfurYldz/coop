@@ -16,26 +16,6 @@ export const JobSortType = {
 } as const;
 export type JobSortType = (typeof JobSortType)[keyof typeof JobSortType];
 
-// Coerce a raw (DB-stored) `job_sort_type` string into a known JobSortType.
-// Missing values (queues created before the sort-type column existed, or a
-// queue that wasn't found) mean FIFO — the historical behavior. Anything else
-// is a bug somewhere upstream (the column has a CHECK constraint), so fail
-// loudly rather than silently mis-sorting the queue.
-export function normalizeJobSortType(
-  raw: string | null | undefined,
-): JobSortType {
-  if (raw == null) {
-    return JobSortType.FIFO;
-  }
-  switch (raw) {
-    case JobSortType.FIFO:
-    case JobSortType.NUM_REPORTS:
-      return raw;
-    default:
-      throw new Error(`Unknown job_sort_type: "${raw}"`);
-  }
-}
-
 export type JobPriorityDeps = {
   getNumTimesReported: (opts: {
     orgId: string;
@@ -52,10 +32,11 @@ export type BatchJobPriorityDeps = {
 
 // Convert a "higher = more urgent" score into a BullMQ priority, where lower
 // numbers are dequeued first. Scores outside [0, MAX_BULL_PRIORITY] clamp to
-// the ends of the range.
+// the ends of the range. The minimum returned value is 1 because BullMQ
+// treats priority 0 as unprioritized (routes to the `wait` list).
 export function toBullPriority(score: number): number {
   const clamped = Math.max(0, Math.min(score, MAX_BULL_PRIORITY));
-  return MAX_BULL_PRIORITY - Math.round(clamped);
+  return Math.max(1, MAX_BULL_PRIORITY - Math.round(clamped));
 }
 
 /**

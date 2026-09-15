@@ -8,14 +8,10 @@ import {
   getJobPrioritiesForItems,
   getJobPriorityForItem,
   JobSortType,
-  normalizeJobSortType,
   toBullPriority,
 } from './JobPriority.js';
 
-// Deliberately hard-coded rather than imported: BullMQ silently breaks FIFO
-// tie-breaking for priorities above 2^21 - 1 (the float64 sort key loses
-// integer precision at 2^53), so changing the module's ceiling should require
-// consciously updating this test too.
+// Hard-coded so that changes to MAX_BULL_PRIORITY require an explicit test update.
 const MAX_BULL_PRIORITY = 2_097_151;
 
 const orgId = 'org-1';
@@ -53,29 +49,6 @@ async function priorityFor(opts: {
 }
 
 describe('JobPriority', () => {
-  describe('normalizeJobSortType', () => {
-    test('passes known sort types through unchanged', () => {
-      expect(normalizeJobSortType('FIFO')).toBe(JobSortType.FIFO);
-      expect(normalizeJobSortType('NUM_REPORTS')).toBe(JobSortType.NUM_REPORTS);
-    });
-
-    test('defaults missing values to FIFO', () => {
-      // Queues created before the sort-type column existed, or a queue that
-      // was not found, behave like they always have: FIFO.
-      expect(normalizeJobSortType(undefined)).toBe(JobSortType.FIFO);
-      expect(normalizeJobSortType(null)).toBe(JobSortType.FIFO);
-    });
-
-    test('throws on unrecognized values', () => {
-      // The column has a CHECK constraint, so an unknown value means a bug;
-      // fail loudly instead of silently mis-sorting the queue.
-      expect(() => normalizeJobSortType('')).toThrow(/Unknown job_sort_type/);
-      expect(() => normalizeJobSortType('SOMETHING_ELSE')).toThrow(
-        /Unknown job_sort_type/,
-      );
-    });
-  });
-
   describe('toBullPriority', () => {
     test('score 0 maps to MAX (back of the prioritized set)', () => {
       expect(toBullPriority(0)).toBe(MAX_BULL_PRIORITY);
@@ -86,9 +59,9 @@ describe('JobPriority', () => {
       expect(toBullPriority(1000)).toBe(MAX_BULL_PRIORITY - 1000);
     });
 
-    test('score above MAX clamps to priority 0 (front of the queue)', () => {
-      expect(toBullPriority(MAX_BULL_PRIORITY + 1)).toBe(0);
-      expect(toBullPriority(MAX_BULL_PRIORITY * 1000)).toBe(0);
+    test('score above MAX clamps to priority 1 (front of the queue)', () => {
+      expect(toBullPriority(MAX_BULL_PRIORITY + 1)).toBe(1);
+      expect(toBullPriority(MAX_BULL_PRIORITY * 1000)).toBe(1);
     });
 
     test('negative score clamps to MAX', () => {
@@ -149,8 +122,8 @@ describe('JobPriority', () => {
       expect(await priorityFor({ reports: null })).toBe(MAX_BULL_PRIORITY);
     });
 
-    test('a report count above MAX clamps to priority 0', async () => {
-      expect(await priorityFor({ reports: MAX_BULL_PRIORITY * 10 })).toBe(0);
+    test('a report count above MAX clamps to priority 1', async () => {
+      expect(await priorityFor({ reports: MAX_BULL_PRIORITY * 10 })).toBe(1);
     });
   });
 

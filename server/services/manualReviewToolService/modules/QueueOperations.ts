@@ -887,7 +887,11 @@ export default class QueueOperations {
         reenqueuedFrom,
         enqueueSourceInfo,
       },
-      { removeOnComplete: true, jobId: bullJobId, priority },
+      {
+        removeOnComplete: true,
+        jobId: bullJobId,
+        ...(priority != null && { priority }),
+      },
     );
 
     // Again, because new job data comes in in the non-legacy format, it's safe
@@ -1079,10 +1083,14 @@ export default class QueueOperations {
       if (jobs.length === 0) break;
       for (const job of jobs) {
         if (job?.id != null) {
+          const item = (job.data as ManualReviewJob).payload.item;
+          // Legacy jobs use `id` instead of `itemId`.
+          const itemId =
+            'itemId' in item ? item.itemId : (item as { id: string }).id;
           pending.push({
             bullId: job.id,
             createdAtMs: new Date(job.data.createdAt).getTime(),
-            itemId: (job.data as ManualReviewJob).payload.item.itemId,
+            itemId,
           });
         }
       }

@@ -60,8 +60,7 @@ import JobEnrichment, {
 import {
   getJobPrioritiesForItems,
   getJobPriorityForItem,
-  normalizeJobSortType,
-  type JobSortType,
+  JobSortType,
 } from './modules/JobPriority.js';
 import JobRendering from './modules/JobRendering.js';
 import JobRouting, {
@@ -508,7 +507,7 @@ export class ManualReviewToolService {
             const priority = await getJobPriorityForItem({
               orgId: input.orgId,
               item: input.payload.item,
-              sortType: normalizeJobSortType(targetQueue?.jobSortType),
+              sortType: targetQueue?.jobSortType ?? JobSortType.FIFO,
               deps: { getNumTimesReported: this.getNumTimesReported() },
             });
 
@@ -1048,7 +1047,7 @@ export class ManualReviewToolService {
       if (queue === undefined) {
         return;
       }
-      const sortType = normalizeJobSortType(queue.jobSortType);
+      const sortType = queue.jobSortType;
 
       await this.queueOps.recomputePrioritiesForQueue({
         orgId,

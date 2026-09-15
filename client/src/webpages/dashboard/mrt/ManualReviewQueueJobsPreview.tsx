@@ -164,7 +164,7 @@ export default function ManualReviewQueueJobsPreview() {
             return {
               jobId: jobData.id,
               createdAt: jobData.createdAt,
-              numReports: (jobData.numTimesReported ?? 0).toLocaleString('en'),
+              numReports: jobData.numTimesReported ?? 0,
               itemId: jobData.payload.item.id,
               itemData: jobData.payload.item.data,
               itemType: jobData.payload.item.type,
@@ -208,7 +208,7 @@ export default function ManualReviewQueueJobsPreview() {
               ))}
             </div>
           ),
-          numReports: <div>{values.numReports}</div>,
+          numReports: <div>{values.numReports.toLocaleString('en')}</div>,
           createdAt: (
             <div>{safeFormat(values.createdAt, 'MM/dd/yy hh:mm a')}</div>
           ),
