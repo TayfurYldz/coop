@@ -34,7 +34,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d7d5db5d.js";
+            window.path_to_searchindex_js = "../searchindex-36a75126.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-33b43635.js"></script>
@@ -239,10 +239,10 @@ docker compose -f docker-compose.images.yaml down -v
 <tr><th>Image</th><th>Dockerfile</th><th>Build target</th><th>Base</th></tr>
 </thead>
 <tbody>
-<tr><td><code>coop-server</code></td><td><code>Dockerfile</code></td><td><code>build_server</code></td><td>node:24.20.0-bookworm-slim + dumb-init</td></tr>
-<tr><td><code>coop-worker</code></td><td><code>Dockerfile</code></td><td><code>build_worker_runner</code></td><td>node:24.20.0-bookworm-slim + dumb-init</td></tr>
+<tr><td><code>coop-server</code></td><td><code>Dockerfile</code></td><td><code>build_server</code></td><td>node:24.21.0-bookworm-slim + dumb-init</td></tr>
+<tr><td><code>coop-worker</code></td><td><code>Dockerfile</code></td><td><code>build_worker_runner</code></td><td>node:24.21.0-bookworm-slim + dumb-init</td></tr>
 <tr><td><code>coop-client</code></td><td><code>client/Dockerfile</code></td><td><code>serve</code></td><td>nginx:1.29.1-bookworm</td></tr>
-<tr><td><code>coop-migrations</code></td><td><code>db/Dockerfile</code></td><td><em>(final stage)</em></td><td>node:24.20.0-bookworm-slim</td></tr>
+<tr><td><code>coop-migrations</code></td><td><code>db/Dockerfile</code></td><td><em>(final stage)</em></td><td>node:24.21.0-bookworm-slim</td></tr>
 </tbody>
 </table>
 </div>
