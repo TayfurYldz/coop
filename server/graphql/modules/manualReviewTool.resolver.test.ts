@@ -42,7 +42,7 @@ function makeCtx(opts: {
     },
   );
   const getQueueForOrgAndDangerouslyBypassPermissioning = jest.fn(async () => {
-    throw new Error('resolver must not bypass permissioning (#1150)');
+    throw new Error('resolver must not bypass permissioning');
   });
   const getTotalPendingJobCountForQueues = jest.fn(async () => 7);
   const dequeueNextJob = jest.fn(async () => null);

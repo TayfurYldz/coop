@@ -188,7 +188,6 @@ describe('QueueOperations', () => {
     },
   );
 
-  // Regression: #1150 -- MRT queue resolvers used to resolve
   // queues via *Dangerously*BypassPermissioning helpers with no permission or
   // membership check, so any authenticated user could read (and dequeue/lock)
   // every queue in the org, including CSAM/NCMEC queues. They now call
