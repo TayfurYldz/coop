@@ -20,6 +20,7 @@ For more information about each release including git tags and artifacts, see [R
 
 - Invalid environment variable values now prevent startup instead of falling back to defaults ([#1235](https://github.com/roostorg/coop/pull/1235) by [@ThisIsMissEm](https://github.com/ThisIsMissEm))
 - Boolean environment variables accept only `1`, `0`, `true` and `false` ([#1235](https://github.com/roostorg/coop/pull/1235) by [@ThisIsMissEm](https://github.com/ThisIsMissEm))
+- `DATABASE_READ_ONLY_HOST` is now optional, falling back to `DATABASE_HOST` ([#1235](https://github.com/roostorg/coop/pull/1235) by [@ThisIsMissEm](https://github.com/ThisIsMissEm))
 - Scylla is now optional via `ITEM_INVESTIGATION_AND_STRIKES_ENABLED` ([#918](https://github.com/roostorg/coop/pull/918) by [@sunilatlas](https://github.com/sunilatlas))
 - Settings "Other" tab renamed to "Partial Items" and its settings relocated ([#965](https://github.com/roostorg/coop/pull/965) by [@golden-fox07](https://github.com/golden-fox07))
 - Queue deletion is refused while routing rules still reference the queue ([#808](https://github.com/roostorg/coop/pull/808) by [@reitblatt](https://github.com/reitblatt))

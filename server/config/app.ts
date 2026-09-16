@@ -19,6 +19,9 @@ export default {
   // internal one.
   uiUrl: env.get('UI_URL'),
 
+  /** Identifies this process in traces and as the Postgres `application_name`. */
+  serviceName: env.get('OTEL_SERVICE_NAME', 'coop-service'),
+
   session: {
     secret: env.get('SESSION_SECRET'),
     cookie: {

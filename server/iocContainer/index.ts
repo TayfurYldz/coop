@@ -3,6 +3,7 @@ import { createRequire } from 'module';
 import Bottle from '@ethanresnick/bottlejs';
 import opentelemetry from '@opentelemetry/api';
 import { type ItemIdentifier } from '@roostorg/coop-types';
+import databaseConfig from '#config/database';
 import {
   types as scyllaTypes,
   type Host as ScyllaHost,
@@ -252,12 +253,7 @@ import {
 import { createPgPool } from './createPgPool.js';
 import { registerGqlDataSources } from './services/gqlDataSources.js';
 import { registerWorkersAndJobs } from './services/workersAndJobs.js';
-import {
-  isEnvTrue,
-  register,
-  safeGetEnvNonNegativeInt,
-  safeGetEnvVar,
-} from './utils.js';
+import { isEnvTrue, register, safeGetEnvVar } from './utils.js';
 
 // the otel instrumentation currently intercepts require statements. support for
 // esm support is experimental so we should wait until it is stable
@@ -451,17 +447,6 @@ export interface Dependencies {
 // treatment that TS gives to classes with private fields; see https://stackoverflow.com/questions/55281162/can-i-force-the-typescript-compiler-to-use-nominal-typing)
 export type PublicInterface<T extends object> = { [K in keyof T]: T[K] };
 
-export function getPgConnectionParams(): pg.ClientConfig {
-  return {
-    user: process.env.DATABASE_USER ?? 'postgres',
-    database: process.env.DATABASE_NAME ?? 'development',
-    password: safeGetEnvVar('DATABASE_PASSWORD'),
-    port: parseInt(process.env.DATABASE_PORT ?? '5432'),
-    host: safeGetEnvVar('DATABASE_HOST'),
-    ssl: isEnvTrue('DATABASE_SSL') ? { rejectUnauthorized: false } : undefined,
-  };
-}
-
 /**
  * A function for creating our service container, configured for production.
  * Services can be rebound in other contexts (namely, tests) as needed.
@@ -473,87 +458,6 @@ export default async function getBottle(
     manualReviewContentResolver?: ManualReviewContentResolver;
   } = {},
 ) {
-  // Pool / client tuning shared by both Kysely pools. Defaults preserve our
-  // pre-Kysely behavior; env var names are generic.
-  const getPgPoolTuning = () => {
-    const statementTimeoutMs =
-      process.env.DATABASE_STATEMENT_TIMEOUT_MS?.trim();
-    const keepAliveInitialDelayMs =
-      process.env.DATABASE_KEEPALIVE_INITIAL_DELAY_MS?.trim();
-    return {
-      // pg's default is 10s, which churns connections during quiet periods.
-      idleTimeoutMillis: safeGetEnvNonNegativeInt(
-        'DATABASE_POOL_IDLE_TIMEOUT_MS',
-        300000,
-      ),
-      // pg's default is 0 (wait forever); fail fast if the db is unreachable.
-      connectionTimeoutMillis: safeGetEnvNonNegativeInt(
-        'DATABASE_POOL_CONNECTION_TIMEOUT_MS',
-        15000,
-      ),
-      // Client-side bound on long-running queries.
-      query_timeout: safeGetEnvNonNegativeInt(
-        'DATABASE_QUERY_TIMEOUT_MS',
-        1000000,
-      ),
-      // Optional server-side bound; defense in depth alongside `query_timeout`.
-      // Unset => Postgres' own default (no limit).
-      ...(statementTimeoutMs && {
-        statement_timeout: safeGetEnvNonNegativeInt(
-          'DATABASE_STATEMENT_TIMEOUT_MS',
-          0,
-        ),
-      }),
-      // Kill sessions sitting idle inside an open transaction (holding locks).
-      idle_in_transaction_session_timeout: safeGetEnvNonNegativeInt(
-        'DATABASE_IDLE_IN_TRANSACTION_TIMEOUT_MS',
-        300000,
-      ),
-      // Recycle each client after N seconds to dodge stale connections.
-      // 0 = never expire (default).
-      maxLifetimeSeconds: safeGetEnvNonNegativeInt(
-        'DATABASE_POOL_MAX_LIFETIME_SECONDS',
-        0,
-      ),
-      // TCP keepalive surfaces NAT/LB connection drops as pool errors
-      // (handled by `createPgPool`) rather than as hung queries. Defaults on;
-      // set DATABASE_KEEPALIVE=false to disable.
-      keepAlive:
-        process.env.DATABASE_KEEPALIVE?.trim().toLowerCase() !== 'false',
-      ...(keepAliveInitialDelayMs && {
-        keepAliveInitialDelayMillis: safeGetEnvNonNegativeInt(
-          'DATABASE_KEEPALIVE_INITIAL_DELAY_MS',
-          0,
-        ),
-      }),
-    };
-  };
-
-  // NB: this is a function because safeGetEnvVar can throw, so we only want to
-  // try to look up the env vars (and throw if they're missing) _if someone
-  // actually tries to fetch a service from bottle that needs these env vars_.
-  // Not every worker/job needs every service or is given every var in its env.
-  //
-  // NB: while we can reasonably provide default values for some of the env vars
-  // below, we wouldn't want to provide default values for all of them, as then
-  // that would defeat the ability of safeGetEnvVar to alert us in prod if a
-  // worker that needs these vars is run without them.
-  const getPgMasterConnectionInfo = () => ({
-    ...getPgConnectionParams(),
-    max: parseInt(process.env.DATABASE_POOL_MAX ?? '30'),
-    application_name:
-      getEnvVarOrWarn('OTEL_SERVICE_NAME') ?? 'unknown-coop-service',
-    ...getPgPoolTuning(),
-  });
-
-  // Kysely's default is `['error']`; opt-in to also logging every executed
-  // query (SQL, bound params, duration).
-  const kyselyLogLevels: ReadonlyArray<'query' | 'error'> = isEnvTrue(
-    'DATABASE_PRINT_LOGS',
-  )
-    ? ['query', 'error']
-    : ['error'];
-
   const bottle = new Bottle<Dependencies>();
 
   // Pg services.
@@ -568,7 +472,7 @@ export default async function getBottle(
   // - KyselyPgReadReplica gives us the same type safety, but sends queries to our
   //   replicas, for when we only need reads and we're ok w/ eventual consistency.
   bottle.factory('KyselyPgPool', () =>
-    createPgPool(getPgMasterConnectionInfo()),
+    createPgPool(databaseConfig.connections.primary),
   );
 
   bottle.factory(
@@ -580,7 +484,7 @@ export default async function getBottle(
           pool: container.KyselyPgPool,
           cursor: Cursor,
         }),
-        log: kyselyLogLevels,
+        log: databaseConfig.logLevels,
       }),
   );
 
@@ -590,14 +494,10 @@ export default async function getBottle(
       new Kysely<CombinedPg>({
         dialect: new PostgresDialect({
           controlClient: pg.Client,
-          pool: createPgPool({
-            ...getPgMasterConnectionInfo(),
-            max: parseInt(process.env.DATABASE_READ_POOL_MAX ?? '150'),
-            host: safeGetEnvVar('DATABASE_READ_ONLY_HOST'),
-          }),
+          pool: createPgPool(databaseConfig.connections.readReplica),
           cursor: Cursor,
         }),
-        log: kyselyLogLevels,
+        log: databaseConfig.logLevels,
       }),
   );
 
@@ -1869,36 +1769,4 @@ function serviceHasBeenAccessed<Deps extends object>(
   // if it's a getter.
   const propDesc = Object.getOwnPropertyDescriptor(container, serviceName);
   return typeof propDesc?.get !== 'function';
-}
-
-/**
- * Gets an env var, or logs a warning if the variable is not defined. This is
- * useful for cases where an env var should be provided, but the app can recover
- * on the off-chance that the variable was improperly omitted, and we'd rather
- * have the fallback behavior than create an outage. However, we still want to
- * log a warning so that we can see in DD that we need to set this variable.
- *
- * TODO: create a DD metric that counts these warnings, and set up a monitor to
- * alert if there are any.
- */
-function getEnvVarOrWarn(varName: string) {
-  const value = process.env[varName];
-
-  if (value == null) {
-    // NB: using this format for the logged JSON is taking on some tech debt
-    // (esp if/once we create a DD monitor/metric that uses `title` to find
-    // these errors), because we probably want to reformat these logged errors
-    // later in a way that makes them more consistent amongst each other and
-    // possibly also more consistent with CoopError errors. For now, though,
-    // figuring out that end state isn't worth the brainpower.
-    // eslint-disable-next-line no-console
-    console.warn(
-      jsonStringify({
-        title: 'MissingEnvVar',
-        message: `Missing env var ${varName}`,
-      }),
-    );
-  }
-
-  return value;
 }

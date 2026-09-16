@@ -29,6 +29,8 @@ const env = await Env.create(new URL('./', import.meta.url), {
 
   // Postgresql configuration:
   DATABASE_HOST: Env.schema.string({ format: 'host' }),
+  // Falls back to DATABASE_HOST, so a deployment without a separate replica
+  // need not repeat the primary host.
   DATABASE_READ_ONLY_HOST: Env.schema.string.optional({ format: 'host' }),
   DATABASE_PORT: Env.schema.integer.positive.optional(),
   DATABASE_NAME: Env.schema.string.optional(),
