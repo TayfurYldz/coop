@@ -101,6 +101,7 @@ import {
   type ApiKeyService,
 } from '../services/apiKeyService/index.js';
 import { type CombinedPg } from '../services/combinedDbTypes.js';
+import { ConfigService } from '../services/configService/index.js';
 import {
   makeDerivedFieldsService,
   type DerivedFieldsService,
@@ -441,7 +442,7 @@ export interface Dependencies {
   Tracer: SafeTracer;
   Meter: CoopMeter;
   KeyValueStore: StringNumberKeyValueStore;
-  ConfigService: { uiUrl: string };
+  ConfigService: ConfigService;
 }
 
 // Takes a class and returns a type that just contains its public methods and
@@ -1666,7 +1667,9 @@ export default async function getBottle(
     'SigningKeyPairStorageService',
     (container) => new PostgresSigningKeyPairStorage(container.KyselyPg),
   );
-  bottle.value('ConfigService', { uiUrl: safeGetEnvVar('UI_URL') });
+  // A factory rather than a value so the instance is built on first use. It is
+  // still a singleton per container, as `bottle.factory` memoises.
+  bottle.factory('ConfigService', () => new ConfigService());
   bottle.value('S3StoreObjectFactory', s3StoreObjectFactory);
   bottle.factory('sendEmail', makeSendEmail);
   register(bottle, 'KeyValueStore', makeKeyValueStore);

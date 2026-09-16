@@ -17,6 +17,8 @@ import {
   ATTR_EXCEPTION_STACKTRACE,
   ATTR_EXCEPTION_TYPE,
 } from '@opentelemetry/semantic-conventions';
+import appConfig from '#config/app';
+import securityConfig from '#config/security';
 import connectPgSimple from 'connect-pg-simple';
 import cors from 'cors';
 import express, { type ErrorRequestHandler, type Request } from 'express';
@@ -86,8 +88,6 @@ async function getCPUUsage() {
   return 1 - (endIdle - startIdle) / (endTotal - startTotal);
 }
 
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-const env = process.env.NODE_ENV || 'development';
 const sessionStore = connectPgSimple(session);
 
 export default async function makeApiServer(deps: Dependencies) {
@@ -97,25 +97,7 @@ export default async function makeApiServer(deps: Dependencies) {
 
   app.use(cors());
 
-  app.use(
-    helmet(
-      env === 'production'
-        ? {}
-        : {
-            contentSecurityPolicy: {
-              directives: {
-                defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-                styleSrc: ["'self'", "'unsafe-inline'"],
-                imgSrc: ["'self'", 'data:', 'blob:', 'https:', 'http:'],
-                connectSrc: ["'self'", 'ws:', 'wss:', 'https:', 'http:'],
-                fontSrc: ["'self'", 'data:', 'https:'],
-                frameSrc: ["'self'"],
-              },
-            },
-          },
-    ),
-  );
+  app.use(helmet(securityConfig.helmet));
   app.use(express.json({ limit: '50mb' }));
 
   app.get('/ready', async (_req, res) => {
@@ -132,14 +114,13 @@ export default async function makeApiServer(deps: Dependencies) {
   const sessionStoreInstance = new sessionStore({ pool: KyselyPgPool });
   app.use(
     session({
-      secret: process.env.SESSION_SECRET!,
+      secret: appConfig.session.secret,
       store: sessionStoreInstance,
       cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
+        secure: appConfig.session.cookie.secure,
+        httpOnly: appConfig.session.cookie.httpOnly,
         sameSite: 'lax',
-        // 30 Days in milliseconds
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+        maxAge: appConfig.session.cookie.maxAge,
       },
       resave: false,
       saveUninitialized: false,
@@ -194,11 +175,8 @@ export default async function makeApiServer(deps: Dependencies) {
           done(null, {
             entryPoint: samlSettings.sso_url as string,
             idpCert: samlSettings.cert as string,
-            // I could use UI_URL here but technically the API could be hosted
-            // on a different domain in the future so hopefully this is more
-            // robust, not that it will likely matter.
-            callbackUrl: `${deps.ConfigService.uiUrl}/api/v1/saml/login/${orgId}/callback`,
-            issuer: deps.ConfigService.uiUrl,
+            callbackUrl: deps.ConfigService.samlCallbackUrl(orgId),
+            issuer: deps.ConfigService.samlIssuer,
           });
         },
       },
@@ -220,7 +198,7 @@ export default async function makeApiServer(deps: Dependencies) {
       failureFlash: true,
     }),
     (_req, res) => {
-      res.redirect(`${deps.ConfigService.uiUrl}/dashboard`);
+      res.redirect(deps.ConfigService.dashboardUrl);
     },
   );
 
@@ -267,12 +245,12 @@ export default async function makeApiServer(deps: Dependencies) {
       },
     }),
     plugins: [
-      ...(process.env.NODE_ENV === 'production'
+      ...(appConfig.env === 'production'
         ? [ApolloServerPluginLandingPageDisabled()]
         : []),
     ],
     validationRules: [safeDepthLimit(safeGetEnvInt('GRAPHQL_MAX_DEPTH', 10))],
-    introspection: process.env.NODE_ENV !== 'production',
+    introspection: appConfig.env !== 'production',
     formatError(formattedError, error) {
       // unwrapResolverError removes the GraphQLError wrapper added by graphql-js
       // when a non-GraphQL error is thrown from a resolver.
