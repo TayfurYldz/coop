@@ -245,12 +245,12 @@ export default async function makeApiServer(deps: Dependencies) {
       },
     }),
     plugins: [
-      ...(appConfig.env === 'production'
+      ...(appConfig.inProduction
         ? [ApolloServerPluginLandingPageDisabled()]
         : []),
     ],
     validationRules: [safeDepthLimit(safeGetEnvInt('GRAPHQL_MAX_DEPTH', 10))],
-    introspection: appConfig.env !== 'production',
+    introspection: !appConfig.inProduction,
     formatError(formattedError, error) {
       // unwrapResolverError removes the GraphQLError wrapper added by graphql-js
       // when a non-GraphQL error is thrown from a resolver.
