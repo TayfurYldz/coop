@@ -59,6 +59,8 @@ const env = await Env.create(new URL('./', import.meta.url), {
   REDIS_PORT: Env.schema.integer.positive.optional(),
   REDIS_USER: Env.schema.string.optional(),
   REDIS_PASSWORD: Env.schema.secret.optional(),
+  // Single-node connections only: the cluster path is always TLS.
+  REDIS_TLS: Env.schema.boolean.optional(),
 
   // Secrets:
   SESSION_SECRET: Env.schema.string(),

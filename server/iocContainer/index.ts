@@ -4,6 +4,7 @@ import Bottle from '@ethanresnick/bottlejs';
 import opentelemetry from '@opentelemetry/api';
 import { type ItemIdentifier } from '@roostorg/coop-types';
 import databaseConfig from '#config/database';
+import redisConfig, { type RedisConnection } from '#config/redis';
 import {
   types as scyllaTypes,
   type Host as ScyllaHost,
@@ -501,66 +502,14 @@ export default async function getBottle(
       }),
   );
 
-  // AUTH-enabled Redis (e.g. ElastiCache with an auth token) rejects every
-  // command with NOAUTH unless credentials are sent, which leaves ioredis stuck
-  // before "ready" and parks commands in the offline queue forever. Local dev
-  // Redis has no password, so only pass credentials when REDIS_PASSWORD is set;
-  // REDIS_USER may be set-but-empty, which means the default user. Shared by the
-  // cluster and single-node paths so both authenticate identically.
-  const redisAuthOptions = (): { username?: string; password?: string } =>
-    process.env.REDIS_PASSWORD
-      ? {
-          ...(process.env.REDIS_USER
-            ? { username: process.env.REDIS_USER }
-            : {}),
-          password: process.env.REDIS_PASSWORD,
-        }
-      : {};
+  const makeRedis = (connection: RedisConnection): IORedis.Redis | Cluster =>
+    'clusters' in connection
+      ? new IORedis.Cluster(connection.clusters, connection.clusterOptions)
+      : new IORedis.default(connection);
 
-  const makeRedis = (
-    extraOptions: { enableOfflineQueue?: boolean } = {},
-  ): IORedis.Redis | Cluster =>
-    safeGetEnvVar('REDIS_USE_CLUSTER') === 'true'
-      ? new IORedis.Cluster(
-          [
-            {
-              host: safeGetEnvVar('REDIS_HOST'),
-              port: parseInt(process.env.REDIS_PORT ?? '6379'),
-            },
-          ],
-          {
-            // See
-            // https://github.com/luin/ioredis/blob/c275e9a337a4aee1565e96fe631d28a29ecb4efa/README.md#special-note-aws-elasticache-clusters-with-tls
-            dnsLookup: (address, callback) => callback(null, address),
-            redisOptions: {
-              tls: {},
-              // Required by BullMQ: its workers use blocking Redis commands
-              // that would otherwise be misinterpreted as timed-out requests.
-              maxRetriesPerRequest: null,
-              ...redisAuthOptions(),
-              ...extraOptions,
-            },
-          },
-        )
-      : new IORedis.default({
-          // Required by BullMQ: its workers use blocking Redis commands
-          // that would otherwise be misinterpreted as timed-out requests.
-          maxRetriesPerRequest: null,
-          port: parseInt(process.env.REDIS_PORT ?? '6379'),
-          host: safeGetEnvVar('REDIS_HOST'),
-          ...redisAuthOptions(),
-          ...(isEnvTrue('REDIS_TLS')
-            ? { tls: { servername: safeGetEnvVar('REDIS_HOST') } }
-            : {}),
-          ...extraOptions,
-        });
-
-  bottle.factory('IORedis', () => makeRedis());
-  // With `enableOfflineQueue: false`, a `queue.addBulk` while Redis is
-  // unreachable rejects immediately instead of resolving against the
-  // in-process buffer. fails enqueue early with "couldn't enqueue".
+  bottle.factory('IORedis', () => makeRedis(redisConfig.connections.main));
   bottle.factory('IORedisEnqueueNoBuffer', () =>
-    makeRedis({ enableOfflineQueue: false }),
+    makeRedis(redisConfig.connections.enqueueNoBuffer),
   );
 
   // Data Warehouse abstraction layer
