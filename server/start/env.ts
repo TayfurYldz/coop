@@ -1,5 +1,18 @@
 import { Env } from '#lib/env';
 
+/**
+ * Whether the Scylla-backed features are switched off, which makes the
+ * connection settings unnecessary.
+ *
+ * A function rather than a boolean because a boolean would be evaluated while
+ * the schema object below is being built — before `Env.create` copies `.env`
+ * file values into `process.env`. It would then be correct only for a
+ * deployment that sets `SCYLLA_ENABLED` as a real environment variable, and
+ * silently wrong for one that sets it in an env file.
+ */
+const scyllaDisabled = () =>
+  process.env.SCYLLA_ENABLED === 'false' || process.env.SCYLLA_ENABLED === '0';
+
 // `optional()` here means the application supplies a default, not that the
 // value is unimportant. See the corresponding `config/*.ts` module for what
 // that default is. Only variables the app genuinely cannot start without are
@@ -107,12 +120,21 @@ const env = await Env.create(new URL('./', import.meta.url), {
     Env.schema.integer.positive.optional(),
 
   // Scylla:
+  // Turning this off swaps in a no-op that drops writes and returns empty
+  // reads, disabling Item Investigation and User Strikes. The connection
+  // settings below are then not needed, which is what `optionalWhen` expresses.
+  SCYLLA_ENABLED: Env.schema.boolean.optional(),
   // Contact points, e.g. "db1,db2:9043". Parsed into a list here so consumers
   // receive `string[]` rather than re-splitting the raw value.
-  SCYLLA_HOSTS: Env.schema.hostList.optional(),
-  SCYLLA_USERNAME: Env.schema.string.optional(),
-  SCYLLA_PASSWORD: Env.schema.secret.optional(),
-  SCYLLA_LOCAL_DATACENTER: Env.schema.string.optional(),
+  SCYLLA_HOSTS: Env.schema.hostList.optionalWhen(scyllaDisabled),
+  SCYLLA_USERNAME: Env.schema.string.optionalWhen(scyllaDisabled),
+  SCYLLA_PASSWORD: Env.schema.secret.optionalWhen(scyllaDisabled),
+  SCYLLA_LOCAL_DATACENTER: Env.schema.string.optionalWhen(scyllaDisabled),
+  SCYLLA_PORT: Env.schema.integer.positive.optional(),
+  SCYLLA_SSL: Env.schema.boolean.optional(),
+  // An explicit SNI value for TLS hostname verification, for when the contact
+  // points don't match the server certificate.
+  SCYLLA_SSL_SERVERNAME: Env.schema.string.optional({ format: 'host' }),
 
   // Selects the NCMEC CyberTipline endpoint that "Submit to NCMEC" decisions are
   // routed to. Anything other than the literal string `production` (including
@@ -140,7 +162,6 @@ const env = await Env.create(new URL('./', import.meta.url), {
   HMA_SERVICE_URL: Env.schema.string.optional({ format: 'url', tld: false }),
 
   // Others:
-  ITEM_INVESTIGATION_AND_STRIKES_ENABLED: Env.schema.boolean.optional(),
   ITEM_QUEUE_TRAFFIC_PERCENTAGE: Env.schema.number(),
 });
 

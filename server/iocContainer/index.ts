@@ -5,10 +5,8 @@ import opentelemetry from '@opentelemetry/api';
 import { type ItemIdentifier } from '@roostorg/coop-types';
 import databaseConfig from '#config/database';
 import redisConfig, { type RedisConnection } from '#config/redis';
-import {
-  types as scyllaTypes,
-  type Host as ScyllaHost,
-} from 'cassandra-driver';
+import scyllaConfig from '#config/scylla';
+import { type Host as ScyllaHost } from 'cassandra-driver';
 import IORedis, { type Cluster } from 'ioredis';
 import { Kysely, PostgresDialect } from 'kysely';
 import _ from 'lodash';
@@ -61,9 +59,7 @@ import makeRuleEvaluator, {
   type RuleEvaluator,
 } from '../rule_engine/RuleEvaluator.js';
 import { Scylla } from '../scylla/index.js';
-import NoOpScylla, {
-  itemInvestigationAndStrikesEnabled,
-} from '../scylla/noOpScylla.js';
+import NoOpScylla from '../scylla/noOpScylla.js';
 import {
   makeActionStatisticsService,
   type ActionStatisticsService,
@@ -254,7 +250,7 @@ import {
 import { createPgPool } from './createPgPool.js';
 import { registerGqlDataSources } from './services/gqlDataSources.js';
 import { registerWorkersAndJobs } from './services/workersAndJobs.js';
-import { isEnvTrue, register, safeGetEnvVar } from './utils.js';
+import { register } from './utils.js';
 
 // the otel instrumentation currently intercepts require statements. support for
 // esm support is experimental so we should wait until it is stable
@@ -636,9 +632,7 @@ export default async function getBottle(
             executionContext,
           );
         },
-        itemInvestigationAndStrikesEnabled(
-          process.env.ITEM_INVESTIGATION_AND_STRIKES_ENABLED,
-        ),
+        scyllaConfig.enabled,
       ),
   );
 
@@ -652,64 +646,16 @@ export default async function getBottle(
   bottle.factory('Scylla', () => {
     // Scylla backs the item-investigation and user-strike features. Operators
     // who don't need those (and don't want to run a Scylla cluster) can set
-    // `ITEM_INVESTIGATION_AND_STRIKES_ENABLED=false` to swap in a no-op that
-    // drops writes and returns empty reads, so no `SCYLLA_*` connection env
-    // vars are required. Defaults to enabled to preserve existing behaviour.
-    if (
-      !itemInvestigationAndStrikesEnabled(
-        process.env.ITEM_INVESTIGATION_AND_STRIKES_ENABLED,
-      )
-    ) {
+    // `SCYLLA_ENABLED=false` to swap in a no-op that drops writes and returns
+    // empty reads, so no `SCYLLA_*` connection env vars are required. Defaults
+    // to enabled to preserve existing behaviour.
+    if (scyllaConfig.connection === null) {
       // eslint-disable-next-line no-restricted-syntax
-      logJson(
-        'scylla.disabled ITEM_INVESTIGATION_AND_STRIKES_ENABLED=false; using no-op Scylla',
-      );
+      logJson('scylla.disabled SCYLLA_ENABLED=false; using no-op Scylla');
       return new NoOpScylla();
     }
 
-    const contactPoints = safeGetEnvVar('SCYLLA_HOSTS')
-      .split(',')
-      .map((it) => it.trim())
-      .filter((it) => it.length > 0);
-    // For TLS hostname verification we need an SNI value that matches the
-    // server cert. Prefer an explicit `SCYLLA_SSL_SERVERNAME` (e.g., the
-    // Keyspaces regional endpoint) over inferring one from `SCYLLA_HOSTS`,
-    // which may contain multiple contact points with different cert names.
-    const sslServerName = process.env.SCYLLA_SSL_SERVERNAME ?? contactPoints[0];
-    const scyllaDriver = new ScyllaClient({
-      contactPoints,
-      credentials: {
-        username: safeGetEnvVar('SCYLLA_USERNAME'),
-        password: safeGetEnvVar('SCYLLA_PASSWORD'),
-      },
-      localDataCenter: safeGetEnvVar('SCYLLA_LOCAL_DATACENTER'),
-      keyspace: 'item_investigation_service',
-      protocolOptions: {
-        port: parseInt(process.env.SCYLLA_PORT ?? '9042'),
-      },
-      sslOptions: isEnvTrue('SCYLLA_SSL')
-        ? {
-            host: sslServerName,
-            rejectUnauthorized: true,
-          }
-        : undefined,
-      pooling: {
-        coreConnectionsPerHost: {
-          [scyllaTypes.distance.local]: 3,
-          [scyllaTypes.distance.remote]: 1,
-        },
-      },
-      queryOptions: {
-        // Quorum consistency requires a simple majority of nodes in a
-        // replica group to respond to read/write requests. Local Quorum is
-        // the same except it only expects nodes in the local datacenter to
-        // respond. For our current Scylla infrastructure quorum and local
-        // quorum will have identical behavior, but if we ever add another
-        // datacenter to the cluster using Quorum and requiring responses
-        // from multiple DCs would degrade performance significantly
-        consistency: scyllaTypes.consistencies.localQuorum,
-      },
-    });
+    const scyllaDriver = new ScyllaClient(scyllaConfig.connection);
 
     // Surface cluster state changes so reconnect storms are visible in logs.
     scyllaDriver.on('hostUp', (host: ScyllaHost) => {

@@ -14,6 +14,25 @@ import { Env as BaseEnv } from '@adonisjs/env';
 
 type Validator<T> = (key: string, value?: string) => T;
 
+/**
+ * Matches `@poppinss/validator-lite`'s own `optionalWhen` condition: truthy
+ * means the variable is optional.
+ *
+ * Prefer the function form. A plain boolean is evaluated when the schema object
+ * literal is built, which happens before `Env.create` copies `.env` file values
+ * into `process.env` — so a condition reading a sibling variable would see it
+ * only when it came from the real environment, not from an env file.
+ */
+type Condition = boolean | ((key: string, value?: string) => boolean);
+
+function isOptional(
+  condition: Condition,
+  key: string,
+  value?: string,
+): boolean {
+  return typeof condition === 'function' ? condition(key, value) : condition;
+}
+
 type IntegerValidator = (() => Validator<number>) & {
   optional: () => Validator<number | undefined>;
 };
@@ -97,6 +116,9 @@ export const integer: IntegerValidators = Object.assign(
 
 type HostListValidator = (() => Validator<readonly string[]>) & {
   optional: () => Validator<readonly string[] | undefined>;
+  optionalWhen: (
+    condition: Condition,
+  ) => Validator<readonly string[] | undefined>;
 };
 
 const HOST_LIST_EXPECTATION =
@@ -155,5 +177,17 @@ export const hostList: HostListValidator = Object.assign(
   {
     optional: (): Validator<readonly string[] | undefined> => (key, value) =>
       value ? parseHostList(key, value) : undefined,
+
+    /**
+     * Required unless `condition` says otherwise, mirroring the built-in
+     * `Env.schema.string.optionalWhen`. Used for a variable that only matters
+     * when the feature it configures is switched on.
+     */
+    optionalWhen:
+      (condition: Condition): Validator<readonly string[] | undefined> =>
+      (key, value) =>
+        isOptional(condition, key, value)
+          ? hostList.optional()(key, value)
+          : hostList()(key, value),
   },
 );

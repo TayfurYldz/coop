@@ -136,4 +136,44 @@ describe('hostList env validator', () => {
       expect(() => hostList.optional()('SCYLLA_HOSTS', ',')).toThrow();
     });
   });
+
+  describe('.optionalWhen()', () => {
+    test('is required when the condition is false', () => {
+      expect(() =>
+        hostList.optionalWhen(false)('SCYLLA_HOSTS', undefined),
+      ).toThrow();
+      expect(hostList.optionalWhen(false)('SCYLLA_HOSTS', 'db1')).toEqual([
+        'db1',
+      ]);
+    });
+
+    test('is optional when the condition is true', () => {
+      expect(
+        hostList.optionalWhen(true)('SCYLLA_HOSTS', undefined),
+      ).toBeUndefined();
+    });
+
+    test('still validates a value that is present, even when optional', () => {
+      expect(() => hostList.optionalWhen(true)('SCYLLA_HOSTS', ',')).toThrow();
+    });
+
+    test('evaluates a function condition at validation time, not schema build time', () => {
+      let disabled = false;
+      const validate = hostList.optionalWhen(() => disabled);
+
+      expect(() => validate('SCYLLA_HOSTS', undefined)).toThrow();
+
+      // The condition is re-read on each call, which is what lets it depend on
+      // a sibling variable that `Env.create` only puts in `process.env` after
+      // the schema object has been built.
+      disabled = true;
+      expect(validate('SCYLLA_HOSTS', undefined)).toBeUndefined();
+    });
+
+    test('passes the key and value through to a function condition', () => {
+      const condition = jest.fn(() => true);
+      hostList.optionalWhen(condition)('SCYLLA_HOSTS', 'db1');
+      expect(condition).toHaveBeenCalledWith('SCYLLA_HOSTS', 'db1');
+    });
+  });
 });
