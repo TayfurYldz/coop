@@ -170,7 +170,9 @@ export default function ManualReviewAnalyticsDashboard() {
         subtitle="Track user reports and monitor your moderators' decisions."
         rightComponent={
           <div className="flex items-center gap-4">
-            <div className="font-semibold text-slate-500">Date Range</div>
+            <div className="font-semibold text-muted-foreground">
+              Date Range
+            </div>
             <DateRangePicker
               initialDateFrom={timeWindow.start}
               initialDateTo={timeWindow.end}

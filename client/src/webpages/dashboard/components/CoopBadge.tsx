@@ -25,15 +25,15 @@ export default function CoopBadge(props: {
   const colorClasses = (() => {
     switch (colorVariant) {
       case 'soft-green':
-        return 'bg-teal-100 text-teal-800 dark:bg-teal-800/30 dark:text-teal-500 fill-teal-800';
+        return 'bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 fill-teal-800';
       case 'soft-red':
-        return 'bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-500 fill-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 fill-red-800';
       case 'soft-gray':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-500 fill-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-muted dark:text-foreground fill-gray-800';
       case 'soft-yellow':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500 fill-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300 fill-yellow-800';
       case 'soft-blue':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-800/30 dark:text-blue-500 fill-blue-800';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 fill-blue-800';
     }
   })();
 

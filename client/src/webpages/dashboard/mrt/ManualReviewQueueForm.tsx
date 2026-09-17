@@ -472,7 +472,7 @@ export default function ManualReviewQueueForm() {
       />
       <div className="flex flex-col items-start mt-6">
         <div className="font-semibold">Reviewer Access</div>
-        <div className="mb-2 text-slate-500">
+        <div className="mb-2 text-muted-foreground">
           Select which moderators should have access to this queue. Note: Users
           who are Admins or Moderator Managers automatically have access to
           every queue, so you don't need to add them as moderators here. You can
@@ -510,7 +510,7 @@ export default function ManualReviewQueueForm() {
         {orgActions.length > 0 && (
           <div className="mt-8">
             <div className="font-semibold">Hidden Actions</div>
-            <div className="mb-2 text-slate-500">
+            <div className="mb-2 text-muted-foreground">
               Select which actions should be hidden from this queue. Hidden
               actions will not be shown to moderators who review jobs in this
               queue. If you don't select any actions, all actions will be
@@ -554,7 +554,7 @@ export default function ManualReviewQueueForm() {
       {!isAppealsQueue && (
         <div className="mt-8">
           <div className="font-semibold">Clear Other Reports for a User</div>
-          <div className="mb-2 text-slate-500">
+          <div className="mb-2 text-muted-foreground">
             When a moderator takes one of the selected actions on a user, Coop
             can also clear that user's other pending reports. CSAM reports are
             never cleared.
@@ -584,7 +584,7 @@ export default function ManualReviewQueueForm() {
             <div className="flex flex-col gap-4 mt-4">
               <div>
                 <div className="mb-2 font-semibold">Trigger Actions</div>
-                <div className="mb-2 text-slate-500">
+                <div className="mb-2 text-muted-foreground">
                   Taking any of these actions on a user triggers clearing their
                   other reports.
                 </div>

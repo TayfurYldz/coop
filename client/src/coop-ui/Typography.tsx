@@ -7,7 +7,7 @@ type TextSize =
 
 type TextWeight = 'regular' | 'medium' | 'semibold' | 'bold';
 
-const textVariants = cva('font-manrope text-gray-800', {
+const textVariants = cva('font-manrope text-gray-800 dark:text-foreground', {
   variants: {
     size: {
       XXS: 'text-xxs',

@@ -339,7 +339,7 @@ const ManualReviewCustomCharts = ({
           ),
         )}
         <div
-          className="flex items-center justify-center w-full rounded cursor-pointer bg-slate-100 hover:bg-slate-200 aspect-square"
+          className="flex items-center justify-center w-full rounded cursor-pointer bg-muted hover:bg-slate-200 aspect-square"
           onClick={onAddChart}
         >
           <PlusOutlined className="items-center text-2xl text-slate-400" />

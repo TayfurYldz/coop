@@ -180,7 +180,7 @@ export default function Overview() {
               }
               value={timeDivision}
             >
-              <SelectTrigger className="w-[180px] bg-white">
+              <SelectTrigger className="w-[180px] bg-card">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -227,7 +227,7 @@ export default function Overview() {
             <ErrorBoundary
               containedInLayout
               FallbackComponent={() => (
-                <div className="flex flex-col items-center justify-center w-full gap-3 p-6 rounded bg-slate-100">
+                <div className="flex flex-col items-center justify-center w-full gap-3 p-6 rounded bg-muted">
                   <div className="text-xl">No chart data available yet</div>
                 </div>
               )}
@@ -247,7 +247,7 @@ export default function Overview() {
                 key={chart.key}
                 containedInLayout
                 FallbackComponent={() => (
-                  <div className="flex flex-col items-center justify-center w-full gap-3 p-6 rounded bg-slate-100">
+                  <div className="flex flex-col items-center justify-center w-full gap-3 p-6 rounded bg-muted">
                     <div className="text-xl">No chart data available yet</div>
                   </div>
                 )}

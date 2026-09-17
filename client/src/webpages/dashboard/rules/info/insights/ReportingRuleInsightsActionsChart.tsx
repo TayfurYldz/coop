@@ -129,7 +129,7 @@ export default function ReportingRuleInsightsActionsChart(props: {
         x={x - 24}
         y={y + 16}
         fill="#71717a"
-        className="pt-3 text-slate-500"
+        className="pt-3 text-muted-foreground"
       >
         {payload.value}
       </text>
@@ -142,7 +142,7 @@ export default function ReportingRuleInsightsActionsChart(props: {
       x={x - 12}
       y={y + 4}
       fill="#71717a"
-      className="pr-3 text-slate-500"
+      className="pr-3 text-muted-foreground"
     >
       {payload.value}
     </text>
@@ -178,7 +178,7 @@ export default function ReportingRuleInsightsActionsChart(props: {
         'desc',
       );
       return (
-        <div className="flex flex-col bg-white rounded-lg shadow text-start">
+        <div className="flex flex-col bg-card rounded-lg shadow text-start">
           <div className="p-3 text-white rounded-t-lg bg-primary">
             {format(new Date(label as string), 'MM/dd/yy')}
           </div>
@@ -337,7 +337,7 @@ export default function ReportingRuleInsightsActionsChart(props: {
         className={`flex font-bold border border-solid cursor-pointer h-fit px-2 py-1.5 ${
           chartType === type
             ? 'border-primary bg-primary text-white'
-            : 'border-slate-200 text-slate-300'
+            : 'border-border text-slate-300'
         } ${extraStyle}`}
         onClick={() => {
           if (chartType !== type) {
@@ -400,10 +400,10 @@ export default function ReportingRuleInsightsActionsChart(props: {
   }
 
   return (
-    <div className="flex justify-between w-full pb-2 bg-white border-none text-start">
+    <div className="flex justify-between w-full pb-2 bg-card border-none text-start">
       <div className="flex flex-col w-full">
         <div className="flex items-center justify-between pb-8 mr-4">
-          <div className="flex h-full px-4 py-2 rounded-lg bg-slate-100">
+          <div className="flex h-full px-4 py-2 rounded-lg bg-muted">
             {chartSelection}
             <div className="flex w-px h-full mx-4 my-1 bg-slate-200" />
             {timeWindowSelection}

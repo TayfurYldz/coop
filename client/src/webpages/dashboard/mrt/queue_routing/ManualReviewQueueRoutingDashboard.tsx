@@ -60,7 +60,7 @@ export default function ManualReviewQueueRoutingDashboard() {
         <title>Routing</title>
       </Helmet>
       <DashboardHeader title="Routing Rules" />
-      <span className="mb-3 text-slate-500">
+      <span className="mb-3 text-muted-foreground">
         These Routing Rules will help you route incoming reports to the right
         queues. Here's how they work:
         <br />
@@ -73,7 +73,7 @@ export default function ManualReviewQueueRoutingDashboard() {
           <li>
             Each Routing Rule checks the incoming report, and can decide to send
             that report to a particular queue. An example of a Routing Rule is:{' '}
-            <span className="italic font-semibold text-slate-500">
+            <span className="italic font-semibold text-muted-foreground">
               If the item that was reported contains the phrase “anyone want to
               hook up?”, send it to the “Sexual Content Queue”.
             </span>

@@ -37,7 +37,7 @@ const DialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         'fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] m-3 sm:mx-auto sm:w-full',
-        'bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 shadow-sm rounded-xl',
+        'bg-card border border-gray-200 dark:border-border shadow-sm rounded-xl',
         'focus:outline-none',
         'duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
@@ -87,7 +87,7 @@ const DialogDescription = React.forwardRef<
   <DialogPrimitive.Description
     ref={ref}
     className={cn(
-      'p-4 overflow-y-auto text-gray-800 dark:text-neutral-400',
+      'p-4 overflow-y-auto text-gray-800 dark:text-muted-foreground',
       className,
     )}
     {...props}
@@ -111,7 +111,7 @@ const DialogCloseButton = () => (
     className={cn(
       'inline-flex items-center justify-center rounded-full size-8',
       'bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200',
-      'dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400 dark:focus:bg-neutral-600',
+      'dark:bg-muted dark:hover:bg-secondary dark:text-muted-foreground dark:focus:bg-secondary',
     )}
   >
     <span className="sr-only">Close</span>

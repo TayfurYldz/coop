@@ -71,10 +71,10 @@ export default function ManualReviewDashboardInsightsGroupBy(props: {
   ) => {
     return (
       <div
-        className={`px-2 py-0.5 m-1 text-start rounded cursor-pointer text-slate-500 font-medium ${
+        className={`px-2 py-0.5 m-1 text-start rounded cursor-pointer text-muted-foreground font-medium ${
           selectedGroupBy?.includes(option)
             ? 'bg-coop-lightblue'
-            : 'bg-white hover:bg-coop-lightblue-hover'
+            : 'bg-card hover:bg-coop-lightblue-hover'
         }`}
         key={option}
         onClick={() => {
@@ -95,19 +95,19 @@ export default function ManualReviewDashboardInsightsGroupBy(props: {
       ref={componentRef}
       className="flex items-center self-center text-start"
     >
-      <div className="pr-2 font-semibold text-slate-500 whitespace-nowrap">
+      <div className="pr-2 font-semibold text-muted-foreground whitespace-nowrap">
         Group by
       </div>
       <div className="relative block float-left">
         <div
           onClick={() => setGroupByMenuVisible((visible) => !visible)}
-          className="flex items-center px-2 py-1 border border-solid rounded cursor-pointer border-slate-200 hover:border-coop-blue"
+          className="flex items-center px-2 py-1 border border-solid rounded cursor-pointer border-border hover:border-coop-blue"
         >
           {selectedGroupBy ? (
             selectedGroupBy.map((option) => (
               <div
                 key={`groupByOptionPill-${option}`}
-                className="flex gap-1.5 bg-slate-200 items-center py-0.5 px-2 font-medium text-slate-500 rounded whitespace-nowrap"
+                className="flex gap-1.5 bg-slate-200 items-center py-0.5 px-2 font-medium text-muted-foreground rounded whitespace-nowrap"
               >
                 {getDisplayNameForGroupByOption(option)}
                 <CloseButton
@@ -145,7 +145,7 @@ export default function ManualReviewDashboardInsightsGroupBy(props: {
           />
         </div>
         {groupByMenuVisible && (
-          <div className="flex flex-col bg-white absolute border border-solid rounded shadow mt-1 p-2 min-w-[180px] z-20 border-slate-200">
+          <div className="flex flex-col bg-card absolute border border-solid rounded shadow mt-1 p-2 min-w-[180px] z-20 border-border">
             {Object.values(
               metric === 'DECISIONS'
                 ? GQLDecisionCountGroupByColumns

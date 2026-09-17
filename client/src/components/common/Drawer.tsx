@@ -13,7 +13,7 @@ export default function Drawer(props: {
     <>
       {isOpen && <div className="fixed inset-0 z-40" onClick={onClose} />}
       <div
-        className={`fixed top-0 right-0 p-8 h-full w-auto border border-solid border-r-0 border-slate-200 rounded-l-lg bg-slate-100 shadow-xl transform transition-transform scrollbar-hide z-50 ${
+        className={`fixed top-0 right-0 p-8 h-full w-auto border border-solid border-r-0 border-border rounded-l-lg bg-muted shadow-xl transform transition-transform scrollbar-hide z-50 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         onClick={(e) => e.stopPropagation()}

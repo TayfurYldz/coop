@@ -205,11 +205,11 @@ export default function CoopSelect<T extends string>(props: {
   return (
     <div
       className={`inline-block relative py-1 px-2 rounded border border-solid focus:border-coop-blue ${
-        isMenuVisible ? 'border-coop-blue' : 'border-slate-200'
+        isMenuVisible ? 'border-coop-blue' : 'border-border'
       } ${
         disabled
           ? 'bg-slate-50 cursor-not-allowed'
-          : 'bg-white hover:border-coop-blue cursor-text'
+          : 'bg-card hover:border-coop-blue cursor-text'
       }`}
       onClick={onClick}
       ref={componentRef}
@@ -258,7 +258,7 @@ export default function CoopSelect<T extends string>(props: {
       {isMenuVisible ? (
         <div
           id="menu"
-          className="absolute z-20 flex flex-col max-h-[256px] overflow-y-scroll bg-white left-0 border-slate-200 border border-solid shadow mt-3"
+          className="absolute z-20 flex flex-col max-h-[256px] overflow-y-scroll bg-card left-0 border-border border border-solid shadow mt-3"
         >
           {options
             .filter(
@@ -272,12 +272,12 @@ export default function CoopSelect<T extends string>(props: {
               <div
                 key={option.value}
                 id={option.value}
-                className={`px-2 py-1 text-start cursor-pointer text-slate-500 ${
+                className={`px-2 py-1 text-start cursor-pointer text-muted-foreground ${
                   selectedOptions.includes(option.value)
                     ? 'bg-coop-lightblue'
                     : focusedOption === option.value
-                      ? 'bg-slate-100'
-                      : 'bg-white'
+                      ? 'bg-muted'
+                      : 'bg-card'
                 } hover:bg-coop-lightblue-hover whitespace-nowrap`}
                 onClick={() => toggleOption(option.value)}
               >

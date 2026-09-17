@@ -406,7 +406,7 @@ export default function RulesDashboardInsights() {
         x={x - 24}
         y={y + 16}
         fill="#71717a"
-        className="pt-3 text-slate-500"
+        className="pt-3 text-muted-foreground"
       >
         {format(new Date(payload.value), 'MM/dd/yy')}
       </text>
@@ -419,7 +419,7 @@ export default function RulesDashboardInsights() {
       x={x - 12}
       y={y + 4}
       fill="#71717a"
-      className="pr-3 text-slate-500"
+      className="pr-3 text-muted-foreground"
     >
       {truncateAndFormatLargeNumber(Number(payload.value))}
     </text>
@@ -451,7 +451,7 @@ export default function RulesDashboardInsights() {
           className={`font-semibold pl-0.5 cursor-pointer hover:opacity-70 ${
             hiddenCategories.includes(value)
               ? 'text-slate-200'
-              : 'text-slate-500'
+              : 'text-muted-foreground'
           }`}
         >
           {value}
@@ -475,7 +475,7 @@ export default function RulesDashboardInsights() {
         'desc',
       );
       return (
-        <div className="flex flex-col bg-white rounded-lg shadow text-start">
+        <div className="flex flex-col bg-card rounded-lg shadow text-start">
           <div className="p-3 text-white rounded-t-lg bg-primary">
             {format(new Date(label as string), 'MM/dd/yy')}
           </div>
@@ -804,7 +804,7 @@ export default function RulesDashboardInsights() {
         className={`cursor-pointer p-3 m-1 text-start rounded-lg font-medium ${
           groupByOption === option
             ? 'text-white bg-primary'
-            : 'bg-white hover:bg-primary/20'
+            : 'bg-card hover:bg-primary/20'
         }`}
         key={`${option}_option`}
         onClick={() => {
@@ -822,7 +822,7 @@ export default function RulesDashboardInsights() {
     <div className="relative self-center block float-left text-start">
       <div
         onClick={() => setGroupByMenuVisible(!groupByMenuVisible)}
-        className="rounded-lg border border-solid border-[#d4d4d8] bg-white text-black font-medium hover:opacity-70"
+        className="rounded-lg border border-solid border-[#d4d4d8] bg-card text-black font-medium hover:opacity-70"
       >
         Group by
         {groupByOption !== InsightsGroupByOption.NONE
@@ -831,7 +831,7 @@ export default function RulesDashboardInsights() {
         <ChevronDown className="w-3 h-3" />
       </div>
       {groupByMenuVisible && (
-        <div className="flex flex-col bg-white absolute border border-solid border-[#d4d4d8] rounded-lg shadow mt-1 p-2 min-w-[240px] z-10">
+        <div className="flex flex-col bg-card absolute border border-solid border-[#d4d4d8] rounded-lg shadow mt-1 p-2 min-w-[240px] z-10">
           {Object.values(InsightsGroupByOption).map((option) =>
             groupByMenuButton(option),
           )}

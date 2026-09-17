@@ -90,7 +90,7 @@ export default function LocationInputModalGeohashTab(props: {
         <div>
           <div className="divider" />
           <div className="mt-4 font-medium">Selected Locations</div>
-          <div className="flex flex-wrap p-1 my-2 border border-solid rounded shadow border-slate-200 bg-slate-100">
+          <div className="flex flex-wrap p-1 my-2 border border-solid rounded shadow border-border bg-muted">
             {geohashLocations.map((location, idx) => {
               return (
                 <TextToken

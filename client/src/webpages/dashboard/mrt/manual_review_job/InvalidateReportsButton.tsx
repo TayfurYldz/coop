@@ -190,7 +190,7 @@ export default function InvalidateReportsButton(props: {
             rows={3}
             maxLength={500}
           />
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Future reports from this user will still land normally; re-run this
             action if needed.
           </p>

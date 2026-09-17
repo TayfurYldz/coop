@@ -8,7 +8,9 @@ export default function FormHeader(props: {
     <div className="flex items-center justify-between w-full mb-8 text-start">
       <div className="flex flex-col justify-start">
         <div className="mb-1 text-2xl font-bold">{title}</div>
-        {subtitle && <div className="text-base text-slate-500">{subtitle}</div>}
+        {subtitle && (
+          <div className="text-base text-muted-foreground">{subtitle}</div>
+        )}
       </div>
       {topRightComponent}
     </div>

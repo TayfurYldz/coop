@@ -175,7 +175,7 @@ export default function ManualReviewJobThreadItemComponent(props: {
               <div className="flex items-center gap-2">
                 <div
                   className={`self-start font-medium ${
-                    textColor ?? 'text-slate-500'
+                    textColor ?? 'text-muted-foreground'
                   }`}
                 >
                   {author?.name

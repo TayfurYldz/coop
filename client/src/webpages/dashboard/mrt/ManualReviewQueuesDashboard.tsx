@@ -343,7 +343,7 @@ export default function ManualReviewQueuesDashboard() {
     (id: string, pendingJobCount: number) => {
       return (
         <Button
-          className="flex items-center justify-center w-full p-4 text-sm text-gray-600 bg-white border border-gray-200 border-solid shadow-none cursor-pointer rounded-md drop-shadow-none hover:border-gray-200 focus:border-gray-200 hover:bg-gray-100 hover:text-gray-600 focus:text-gray-600"
+          className="flex items-center justify-center w-full p-4 text-sm text-gray-600 bg-card border border-gray-200 border-solid shadow-none cursor-pointer rounded-md drop-shadow-none hover:border-gray-200 focus:border-gray-200 hover:bg-gray-100 hover:text-gray-600 focus:text-gray-600"
           onClick={() => navigate(`review/${id}`)}
           disabled={pendingJobCount === 0}
         >
@@ -732,7 +732,7 @@ export default function ManualReviewQueuesDashboard() {
                     ? {
                         deleteJobs: (
                           <Button
-                            className="flex items-center justify-center w-full p-4 text-sm text-gray-600 bg-white border border-gray-200 border-solid shadow-none cursor-pointer rounded-md drop-shadow-none hover:border-gray-200 focus:border-gray-200 hover:bg-gray-100 hover:text-gray-600 focus:text-gray-600"
+                            className="flex items-center justify-center w-full p-4 text-sm text-gray-600 bg-card border border-gray-200 border-solid shadow-none cursor-pointer rounded-md drop-shadow-none hover:border-gray-200 focus:border-gray-200 hover:bg-gray-100 hover:text-gray-600 focus:text-gray-600"
                             onClick={(event) => {
                               event.stopPropagation();
                               setDeleteAllJobsModalInfo({
@@ -753,7 +753,7 @@ export default function ManualReviewQueuesDashboard() {
                     ? {
                         previewJobs: (
                           <Button
-                            className="flex items-center justify-center w-full p-4 text-sm text-gray-600 bg-white border border-gray-200 border-solid shadow-none cursor-pointer rounded-md drop-shadow-none hover:border-gray-200 focus:border-gray-200 hover:bg-gray-100 hover:text-gray-600 focus:text-gray-600"
+                            className="flex items-center justify-center w-full p-4 text-sm text-gray-600 bg-card border border-gray-200 border-solid shadow-none cursor-pointer rounded-md drop-shadow-none hover:border-gray-200 focus:border-gray-200 hover:bg-gray-100 hover:text-gray-600 focus:text-gray-600"
                             onClick={() => navigate(`jobs/${id}`)}
                             disabled={pendingJobCount === 0}
                           >
@@ -865,7 +865,7 @@ export default function ManualReviewQueuesDashboard() {
       <Button
         className={`font-semibold text-base rounded ${
           visibleColumnsCount === Object.keys(columnLabels).length
-            ? 'bg-white text-gray-600 hover:bg-white hover:text-gray-600'
+            ? 'bg-card text-gray-600 hover:bg-card hover:text-gray-600'
             : 'bg-gray-600 text-white border-none hover:bg-gray-500'
         }`}
         icon={<GridAlt className="inline-block w-4 h-4 mr-2" />}
@@ -874,7 +874,7 @@ export default function ManualReviewQueuesDashboard() {
         Columns
       </Button>
       {columnsMenuVisible && (
-        <div className="absolute left-0 z-20 flex flex-col mt-1 bg-white border border-solid border-gray-300 rounded shadow-md min-w-[240px]">
+        <div className="absolute left-0 z-20 flex flex-col mt-1 bg-card border border-solid border-gray-300 rounded shadow-md min-w-[240px]">
           <div className="px-4 py-4 text-base font-semibold">Show Columns</div>
           <div className="!p-0 !m-0 divider" />
           <div className="flex flex-col px-4 py-2">
@@ -934,7 +934,7 @@ export default function ManualReviewQueuesDashboard() {
       (getSkippedJobsForUser &&
         getSkippedJobsForUser.getSkippedJobsForUser > 0) ? (
         <div className="flex flex-row">
-          <div className="flex justify-between p-4 mb-4 mr-4 bg-white border border-solid rounded border-slate-200 w-96">
+          <div className="flex justify-between p-4 mb-4 mr-4 bg-card border border-solid rounded border-border w-96">
             <div className="flex flex-col text-start">
               <div className="pb-4 text-base font-semibold text-slate-900">
                 Jobs You've Reviewed
@@ -950,7 +950,7 @@ export default function ManualReviewQueuesDashboard() {
               <TapFilled size={24} className={`text-sky-400`} />
             </div>
           </div>
-          <div className="flex justify-between p-4 mb-4 bg-white border border-solid rounded border-slate-200 w-96">
+          <div className="flex justify-between p-4 mb-4 bg-card border border-solid rounded border-border w-96">
             <div className="flex flex-col text-start">
               <div className="pb-4 text-base font-semibold text-slate-900">
                 Jobs You've Skipped

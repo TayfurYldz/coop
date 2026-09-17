@@ -586,7 +586,7 @@ export default function ItemTypeForm() {
             />
           </div>
           <Button
-            className="self-start mb-8 font-semibold bg-white border border-solid rounded-md cursor-pointer select-none border-coop-purple hover:border-coop-purple-hover text-coop-purple hover:text-coop-purple-hover focus:text-coop-purple focus:border-coop-purple"
+            className="self-start mb-8 font-semibold bg-card border border-solid rounded-md cursor-pointer select-none border-coop-purple hover:border-coop-purple-hover text-coop-purple hover:text-coop-purple-hover focus:text-coop-purple focus:border-coop-purple"
             onClick={() =>
               setCustomFields([
                 ...customFields,

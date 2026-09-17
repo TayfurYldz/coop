@@ -10,7 +10,7 @@ export default function RuleInsights(props: { ruleId: string }) {
         <div className="flex flex-col items-start pt-4 text-start">
           <div className="flex flex-col">
             <div className="flex text-xl font-semibold">Actions</div>
-            <div className="flex text-base text-slate-500">
+            <div className="flex text-base text-muted-foreground">
               See how many actions the Rule has applied over time.
             </div>
           </div>

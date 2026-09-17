@@ -58,12 +58,12 @@ export default function EmptyDashboard(
 
   return (
     <div className="flex items-center justify-center w-full h-full">
-      <div className="flex flex-col items-center justify-center p-12 mt-24 bg-white shadow-md rounded-xl text-slate-500">
+      <div className="flex flex-col items-center justify-center p-12 mt-24 bg-card shadow-md rounded-xl text-muted-foreground">
         <div className="pb-3 text-neutral-300 text-8xl">{icon}</div>
-        <div className="text-slate-500 text-3xl max-w-[400px] pb-2">
+        <div className="text-muted-foreground text-3xl max-w-[400px] pb-2">
           No {dashboardName}
         </div>
-        <div className="text-slate-500 text-base pt-2 pb-10 max-w-[400px]">
+        <div className="text-muted-foreground text-base pt-2 pb-10 max-w-[400px]">
           Looks like you haven't created any {dashboardName.toLowerCase()} yet.
           Click the button below to get started!
         </div>

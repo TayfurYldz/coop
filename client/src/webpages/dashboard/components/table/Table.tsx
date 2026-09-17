@@ -196,10 +196,10 @@ export default function Table<TData extends Record<string, any>>(
                         ? selectedRow === rowIndex
                           ? 'cursor-pointer bg-indigo-100 hover:bg-indigo-100 border border-solid border-indigo-200 group'
                           : `cursor-pointer hover:bg-indigo-100 group ${
-                              rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'
+                              rowIndex % 2 === 0 ? 'bg-card' : 'bg-slate-50'
                             }`
                         : rowIndex % 2 === 0
-                          ? 'bg-white'
+                          ? 'bg-card'
                           : 'bg-slate-50'
                     }
                     onClick={() => selectRow(row, rowIndex)}
@@ -222,10 +222,10 @@ export default function Table<TData extends Record<string, any>>(
                         ? selectedRow === rowIndex
                           ? 'cursor-pointer bg-indigo-100 hover:bg-indigo-100 border border-solid border-indigo-200 group'
                           : `cursor-pointer hover:bg-indigo-100 group ${
-                              rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'
+                              rowIndex % 2 === 0 ? 'bg-card' : 'bg-slate-50'
                             }`
                         : rowIndex % 2 === 0
-                          ? 'bg-white'
+                          ? 'bg-card'
                           : 'bg-slate-50'
                     }
                     onClick={() => selectRow(row, rowIndex)}

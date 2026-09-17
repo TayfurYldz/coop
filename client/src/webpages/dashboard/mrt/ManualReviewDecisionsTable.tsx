@@ -78,10 +78,10 @@ export default function ManualReviewDecisionsTable(props: {
   const groupByMenuButton = (option: GQLDecisionsCountGroupBy) => {
     return (
       <div
-        className={`px-2 py-0.5 m-1 text-start rounded cursor-pointer text-slate-500 font-medium ${
+        className={`px-2 py-0.5 m-1 text-start rounded cursor-pointer text-muted-foreground font-medium ${
           groupBy === option
             ? 'bg-coop-lightblue'
-            : 'bg-white hover:bg-coop-lightblue-hover'
+            : 'bg-card hover:bg-coop-lightblue-hover'
         }`}
         key={option}
         onClick={() => {
@@ -215,20 +215,20 @@ export default function ManualReviewDecisionsTable(props: {
   return (
     <div>
       <div className="flex text-start">
-        <div className="pb-2 text-base font-medium text-slate-500">
+        <div className="pb-2 text-base font-medium text-muted-foreground">
           {`Decisions By ${groupBy === 'REVIEWER_ID' ? 'Reviewer' : 'Queue'}`}
         </div>
         <div className="flex-grow" />
         <div className="relative flex">
-          <div className="flex self-center pr-2 font-semibold text-slate-500">
+          <div className="flex self-center pr-2 font-semibold text-muted-foreground">
             Group by
           </div>
           <div>
             <div
               onClick={() => setGroupByMenuVisible((visible) => !visible)}
-              className="flex items-center px-2 py-1 border border-solid rounded cursor-pointer border-slate-200 hover:border-coop-blue"
+              className="flex items-center px-2 py-1 border border-solid rounded cursor-pointer border-border hover:border-coop-blue"
             >
-              <div className="flex bg-slate-200 items-center py-0.5 px-2 font-medium text-slate-500 rounded whitespace-nowrap">
+              <div className="flex bg-slate-200 items-center py-0.5 px-2 font-medium text-muted-foreground rounded whitespace-nowrap">
                 {groupBy === 'REVIEWER_ID' ? 'Reviewer' : 'Queue'}
               </div>
               {/*
@@ -253,7 +253,7 @@ export default function ManualReviewDecisionsTable(props: {
               />
             </div>
             {groupByMenuVisible && (
-              <div className="flex flex-col bg-white absolute border border-solid rounded shadow mt-1 p-2 min-w-[180px] z-20 border-slate-200">
+              <div className="flex flex-col bg-card absolute border border-solid rounded shadow mt-1 p-2 min-w-[180px] z-20 border-border">
                 {Object.values(GQLDecisionsCountGroupBy).map((option) =>
                   groupByMenuButton(option),
                 )}

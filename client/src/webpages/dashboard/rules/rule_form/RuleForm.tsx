@@ -1194,7 +1194,7 @@ export default function RuleForm() {
 
     return (
       <div
-        className="p-4 bg-white border border-gray-200 border-solid rounded-lg relative"
+        className="p-4 bg-card border border-gray-200 border-solid rounded-lg relative"
         key={`set_${conditionSetIndex}`}
       >
         {conditionSet.conditions.map((condition, conditionIndex) => (
@@ -1449,7 +1449,7 @@ export default function RuleForm() {
         <div>
           <Button
             type="default"
-            className="block mt-4 mb-6 text-base font-medium rounded-lg text-slate-500"
+            className="block mt-4 mb-6 text-base font-medium rounded-lg text-muted-foreground"
             onClick={() =>
               dispatch({ type: RuleFormReducerActionType.AddConditionSet })
             }
@@ -1733,7 +1733,7 @@ export default function RuleForm() {
     return (
       <Button
         key={timeString}
-        className="px-2 mx-1 text-base font-medium rounded-lg text-slate-500 hover:border-coop-dark-purple-hover hover:text-coop-dark-purple-hover focus:border-coop-dark-purple focus:text-coop-dark-purple hover:bg-coop-lightpurple"
+        className="px-2 mx-1 text-base font-medium rounded-lg text-muted-foreground hover:border-coop-dark-purple-hover hover:text-coop-dark-purple-hover focus:border-coop-dark-purple focus:text-coop-dark-purple hover:bg-coop-lightpurple"
         size="small"
         onClick={() =>
           dispatch({
@@ -1900,7 +1900,7 @@ export default function RuleForm() {
 
   const advancedSettingsToggle = (
     <div
-      className="flex items-center text-base font-medium cursor-pointer text-slate-500"
+      className="flex items-center text-base font-medium cursor-pointer text-muted-foreground"
       onClick={onAdvancedSettingsClick}
     >
       Advanced Settings{' '}
@@ -1913,7 +1913,7 @@ export default function RuleForm() {
   );
 
   const advancedSettingsSection = (
-    <div className="flex flex-col p-4 mb-8 bg-white border border-gray-200 border-solid rounded-lg shadow">
+    <div className="flex flex-col p-4 mb-8 bg-card border border-gray-200 border-solid rounded-lg shadow">
       {advancedSettingsToggle}
       {state.advancedSettingsVisible && (
         <div className="p-3">

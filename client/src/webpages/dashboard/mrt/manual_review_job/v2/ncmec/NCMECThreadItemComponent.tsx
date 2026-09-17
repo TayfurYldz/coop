@@ -74,7 +74,7 @@ export default function NCMECThreadItemComponent(props: {
               <div className="flex items-center gap-2">
                 <div
                   className={`self-start font-medium
-                    text-slate-500
+                    text-muted-foreground
                   `}
                 >
                   {author?.name

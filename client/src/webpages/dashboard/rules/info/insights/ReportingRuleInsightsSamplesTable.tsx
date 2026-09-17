@@ -475,7 +475,7 @@ export default function ReportingRuleInsightsSamplesTable(props: {
 
   const ruleVersionDropdown = (
     <div className="flex items-center justify-end">
-      <div className="flex items-center pr-2 text-sm font-medium text-slate-500">
+      <div className="flex items-center pr-2 text-sm font-medium text-muted-foreground">
         Show Samples Matching:
       </div>
       <Select value={lookback} onChange={(value) => updateLookback(value)}>
@@ -500,7 +500,7 @@ export default function ReportingRuleInsightsSamplesTable(props: {
       <div className="flex items-center justify-between pb-4">
         <div className="flex flex-col">
           <div className="flex text-xl font-semibold">Samples</div>
-          <div className="flex text-sm text-slate-500">
+          <div className="flex text-sm text-muted-foreground">
             Below are examples of reports that were caught by this Rule.
           </div>
         </div>

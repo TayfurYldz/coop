@@ -2,6 +2,15 @@ import { cn } from '@/lib/utils';
 import * as SliderPrimitive from '@radix-ui/react-slider';
 import * as React from 'react';
 
+/**
+ * The knob reads as a light disc on both themes: `bg-card` is pure white in
+ * light (what `bg-background` used to resolve to before the page token moved
+ * to #F9F9F9), and dark flips it to the foreground tone so it stays visible
+ * against the near-black page.
+ */
+const thumbClasses =
+  'block w-6 h-6 shadow-lg rounded-full border-primary/50 bg-card dark:bg-foreground transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50';
+
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
@@ -14,12 +23,12 @@ const Slider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-gray-200">
+    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-gray-200 dark:bg-muted">
       <SliderPrimitive.Range className="absolute h-full bg-primary" />
     </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block w-6 h-6 shadow-lg rounded-full border-primary/50 bg-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50" />
+    <SliderPrimitive.Thumb className={thumbClasses} />
     {props.defaultValue?.length === 2 && (
-      <SliderPrimitive.Thumb className="block w-6 h-6 shadow-lg rounded-full border-primary/50 bg-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50" />
+      <SliderPrimitive.Thumb className={thumbClasses} />
     )}
   </SliderPrimitive.Root>
 ));

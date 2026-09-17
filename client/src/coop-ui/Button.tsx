@@ -14,7 +14,7 @@ const buttonVariants = cva(
         ghost: 'border border-transparent',
         soft: 'border border-transparent',
         white:
-          'border border-gray-200 bg-white hover:bg-gray-50 focus:bg-gray-50 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700',
+          'border border-gray-200 bg-card hover:bg-gray-50 focus:bg-gray-50 dark:bg-card dark:border-border dark:hover:bg-accent dark:focus:bg-accent',
         link: 'border border-transparent hover:underline',
       },
       color: {
@@ -67,7 +67,7 @@ const buttonVariants = cva(
         variant: 'outline',
         color: 'gray',
         class:
-          'border-gray-600 text-gray-600 hover:bg-gray-50 hover:border-gray-800 hover:text-gray-800 focus:border-gray-800 focus:text-gray-800 dark:border-gray-500 dark:text-gray-500 dark:hover:border-gray-700 dark:hover:text-gray-700 dark:focus:border-gray-700 dark:focus:text-gray-700',
+          'border-gray-600 text-gray-600 hover:bg-gray-50 hover:border-gray-800 hover:text-gray-800 focus:border-gray-800 focus:text-gray-800 dark:border-border dark:text-muted-foreground dark:hover:border-muted-foreground dark:hover:text-foreground dark:focus:border-muted-foreground dark:focus:text-foreground',
       },
       {
         variant: 'outline',
@@ -99,7 +99,7 @@ const buttonVariants = cva(
         variant: 'ghost',
         color: 'gray',
         class:
-          'text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 dark:text-gray-500 dark:hover:bg-gray-800/30 dark:hover:text-gray-400 dark:focus:bg-gray-800/30 dark:focus:text-gray-400',
+          'text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 dark:text-muted-foreground dark:hover:bg-accent dark:hover:text-foreground dark:focus:bg-accent dark:focus:text-foreground',
       },
       {
         variant: 'ghost',
@@ -131,7 +131,7 @@ const buttonVariants = cva(
         variant: 'soft',
         color: 'gray',
         class:
-          'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-900 dark:focus:bg-gray-900',
+          'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:bg-gray-200 dark:text-foreground dark:hover:bg-accent dark:focus:bg-accent',
       },
       {
         variant: 'soft',
@@ -190,7 +190,7 @@ const buttonVariants = cva(
         variant: 'link',
         color: 'gray',
         class:
-          'text-gray-600 hover:text-gray-800 focus:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400 dark:focus:text-gray-400',
+          'text-gray-600 hover:text-gray-800 focus:text-gray-800 dark:text-muted-foreground dark:hover:text-foreground dark:focus:text-foreground',
       },
       {
         variant: 'link',

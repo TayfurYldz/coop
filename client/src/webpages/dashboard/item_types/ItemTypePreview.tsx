@@ -132,7 +132,7 @@ function ContentTypePreview(props: { roles: ItemTypeRoles<'CONTENT'> }) {
           }`}
         />
       </ItemTypePreviewTooltip>
-      <div className="flex flex-col items-stretch p-4 border border-solid rounded-lg gap-2 border-slate-200">
+      <div className="flex flex-col items-stretch p-4 border border-solid rounded-lg gap-2 border-border">
         <ItemTypePreviewTooltip
           role={SchemaFieldRoles.CREATED_AT}
           value={roles['createdAt']}
@@ -222,12 +222,12 @@ function ThreadTypePreview(props: { roles: ItemTypeRoles<'THREAD'> }) {
           }`}
         />
       </ItemTypePreviewTooltip>
-      <div className="flex flex-col items-stretch p-4 mt-4 border border-solid rounded-lg gap-2 border-slate-200">
+      <div className="flex flex-col items-stretch p-4 mt-4 border border-solid rounded-lg gap-2 border-border">
         <div className="self-end w-1/6 h-3 rounded-lg bg-slate-200" />
         <div className="h-3 rounded-lg bg-slate-200" />
         <div className="h-32 rounded-lg bg-slate-200" />
         <div className="w-4/5 h-3 rounded-lg bg-slate-200 " />
-        <div className="flex flex-row items-center p-4 mt-4 border border-solid rounded-lg gap-2 border-slate-200">
+        <div className="flex flex-row items-center p-4 mt-4 border border-solid rounded-lg gap-2 border-border">
           <div className="w-8 h-8 rounded-full bg-slate-200" />
           <div className="h-3 rounded-lg bg-slate-200 grow" />
         </div>
@@ -241,7 +241,7 @@ function UserTypePreview(props: { roles: ItemTypeRoles<'USER'> }) {
   const { createdAt, displayName, profileIcon, backgroundImage } = roles;
 
   return (
-    <div className="flex flex-col w-56 p-4 border border-solid rounded-lg gap-2 border-slate-200">
+    <div className="flex flex-col w-56 p-4 border border-solid rounded-lg gap-2 border-border">
       <div className="flex flex-row items-center gap-2">
         <ItemTypePreviewTooltip
           role={SchemaFieldRoles.PROFILE_ICON}

@@ -9,7 +9,7 @@ function subcategoryOptionComponent(props: {
   const { id, label, description, onSelect } = props;
   return (
     <div
-      className="flex flex-col justify-center p-4 bg-white border border-solid rounded-lg cursor-pointer border-slate-200 w-60 drop-shadow hover:bg-sky-100"
+      className="flex flex-col justify-center p-4 bg-card border border-solid rounded-lg cursor-pointer border-border w-60 drop-shadow hover:bg-sky-100"
       onClick={() => onSelect(id)}
       key={id}
     >

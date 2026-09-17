@@ -39,7 +39,7 @@ export default function SubmitButton(props: {
       <Button
         className={`${
           disabled
-            ? '!bg-slate-200 !text-slate-400 cursor-not-allowed'
+            ? '!bg-slate-200 !text-slate-400 dark:!bg-muted dark:!text-muted-foreground cursor-not-allowed'
             : 'cursor-pointer !bg-primary hover:!bg-primary/70 !text-white'
         } rounded-lg !border-none shadow-none min-w-[64px] font-medium`}
         type="primary"

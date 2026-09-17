@@ -174,7 +174,7 @@ export default function OverviewChart(props: {
   }, [metric, decisionsData, actionStatsData]);
 
   const emptyChart = (
-    <div className="flex flex-col items-center justify-center gap-3 p-6 rounded bg-slate-100">
+    <div className="flex flex-col items-center justify-center gap-3 p-6 rounded bg-muted">
       <div className="text-sm text-slate-400">
         No data available for the selected time period.
       </div>
@@ -274,7 +274,7 @@ export default function OverviewChart(props: {
         'desc',
       );
       return (
-        <div className="flex flex-col max-w-sm overflow-x-scroll bg-white rounded-lg shadow text-start">
+        <div className="flex flex-col max-w-sm overflow-x-scroll bg-card rounded-lg shadow text-start">
           <div className="p-3 text-white rounded-tl-lg rounded-tr-lg bg-primary">
             {label}
           </div>
@@ -421,14 +421,14 @@ export default function OverviewChart(props: {
 
   if (error || decisionsError || actionStatsError) {
     return (
-      <div className="flex flex-col w-full p-6 bg-white border border-solid rounded-lg border-slate-200">
+      <div className="flex flex-col w-full p-6 bg-card border border-solid rounded-lg border-border">
         <div className="flex pb-6">
           <div className="flex items-start gap-2">
             <Icon className={`flex w-6 h-6 ${iconColor}`} />
             <div className="pb-2 text-lg font-bold">{title}</div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center gap-3 p-6 rounded bg-slate-100">
+        <div className="flex flex-col items-center justify-center gap-3 p-6 rounded bg-muted">
           <div className="text-sm text-slate-400">
             Analytics data is temporarily unavailable.
           </div>
@@ -440,7 +440,7 @@ export default function OverviewChart(props: {
   const loading = decisionsLoading || actionStatsLoading;
 
   return (
-    <div className="flex flex-col w-full p-6 bg-white border border-solid rounded-lg border-slate-200">
+    <div className="flex flex-col w-full p-6 bg-card border border-solid rounded-lg border-border">
       <div className="flex pb-6">
         <div className="flex items-start gap-2">
           <Icon className={`flex w-6 h-6 ${iconColor}`} />

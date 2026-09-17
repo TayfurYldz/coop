@@ -706,7 +706,7 @@ export default function Dashboard() {
   return (
     <div
       className={`flex w-full h-screen${
-        isUsingLegacyCSS ? '' : ' bg-slate-50 dark:bg-neutral-950'
+        isUsingLegacyCSS ? '' : ' bg-slate-50 dark:bg-background'
       }`}
     >
       <Helmet>
@@ -724,7 +724,7 @@ export default function Dashboard() {
       />
       {isUsingLegacyCSS ? (
         <>
-          <div className="w-px h-full bg-[#e5e7eb] dark:bg-neutral-800" />
+          <div className="w-px h-full bg-[#e5e7eb] dark:bg-border" />
           <div className="flex justify-center w-full px-12 py-8 overflow-auto">
             <ErrorBoundary
               key={pathname}

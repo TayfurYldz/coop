@@ -77,7 +77,7 @@ export default function OverviewTable(props: {
                 return (
                   <tr
                     key={it.policyId}
-                    className={`${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                    className={`${i % 2 === 0 ? 'bg-card' : 'bg-gray-50'}`}
                   >
                     <td className="py-2 pl-3 text-left">
                       {policy?.name ?? 'Unknown'}
@@ -96,7 +96,7 @@ export default function OverviewTable(props: {
   })();
 
   const emptyChart = (
-    <div className="flex flex-col items-center justify-center gap-3 p-6 rounded bg-slate-100">
+    <div className="flex flex-col items-center justify-center gap-3 p-6 rounded bg-muted">
       <div className="text-sm text-slate-400">
         No data available for the selected time period.
       </div>
@@ -104,7 +104,7 @@ export default function OverviewTable(props: {
   );
 
   return (
-    <div className="flex flex-col w-full p-6 bg-white border border-solid rounded-lg border-slate-200">
+    <div className="flex flex-col w-full p-6 bg-card border border-solid rounded-lg border-border">
       <div className="flex pb-6">
         <div className="flex items-start gap-2">
           <Icon className={`flex w-6 h-6 ${iconColor}`} />

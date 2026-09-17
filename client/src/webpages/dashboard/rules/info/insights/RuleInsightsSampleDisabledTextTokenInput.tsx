@@ -9,7 +9,7 @@ export default function RuleInsightsSampleDisabledTextTokenInput(props: {
   return (
     <div
       key={uniqueKey}
-      className="flex p-2 mx-2 bg-white rounded-lg whitespace-nowrap"
+      className="flex p-2 mx-2 bg-card rounded-lg whitespace-nowrap"
     >
       <div
         key={[uniqueKey, 'TextTokenInput-tokens'].join('_')}

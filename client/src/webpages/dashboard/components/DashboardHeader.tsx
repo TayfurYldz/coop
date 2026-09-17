@@ -9,7 +9,7 @@ export default function DashboardHeader(props: {
       <div className="flex flex-col pr-16 text-start">
         <div className="mb-1 text-2xl font-bold">{title}</div>
         {subtitle && (
-          <div className="text-[14px] font-normal mb-0.5 text-slate-500">
+          <div className="text-[14px] font-normal mb-0.5 text-muted-foreground">
             {subtitle}
           </div>
         )}

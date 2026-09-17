@@ -91,7 +91,7 @@ export default function IntegrationCard(props: {
 
   return (
     <>
-      <Wrapper className="relative flex flex-col items-center justify-center w-full h-full p-6 pt-12 pb-12 bg-white border border-solid rounded-3xl border-slate-300 transition-all duration-200 ease-out box-border hover:transform hover:-translate-y-1 hover:transition-all hover:duration-200 hover:ease-in hover:dashboard-border-primary/70 hover:cursor-pointer">
+      <Wrapper className="relative flex flex-col items-center justify-center w-full h-full p-6 pt-12 pb-12 bg-card border border-solid rounded-3xl border-slate-300 transition-all duration-200 ease-out box-border hover:transform hover:-translate-y-1 hover:transition-all hover:duration-200 hover:ease-in hover:dashboard-border-primary/70 hover:cursor-pointer">
         <div className="w-16 h-16 p-4 mb-6 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
           {logo ? (
             <img src={logo} alt="" className="w-full h-full object-contain" />

@@ -76,7 +76,7 @@ export default function RuleActionParametersEditor({
         return (
           <div
             key={action.id}
-            className="flex items-center gap-3 rounded-md border border-solid border-slate-200 p-2"
+            className="flex items-center gap-3 rounded-md border border-solid border-border p-2"
           >
             <span className="text-sm font-medium">{action.name}</span>
             {missing.length > 0 ? (
@@ -84,7 +84,7 @@ export default function RuleActionParametersEditor({
                 Missing: {missing.join(', ')}
               </span>
             ) : (
-              <span className="text-xs text-slate-500">Configured</span>
+              <span className="text-xs text-muted-foreground">Configured</span>
             )}
             {!disabled && (
               <button

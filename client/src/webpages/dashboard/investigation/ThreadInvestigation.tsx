@@ -93,14 +93,14 @@ function ThreadMessageItem(props: {
     >
       <div className="flex flex-col grow">
         <div className="flex flex-row items-center mt-2">
-          <div className="self-start text-xs text-slate-500">
+          <div className="self-start text-xs text-muted-foreground">
             {truncateIdIfNeeded(authorName, 8)}
           </div>
-          <div className="self-end text-xs text-slate-500">
+          <div className="self-end text-xs text-muted-foreground">
             {`ID: ${message.id}`}
           </div>
           {timestamp ? (
-            <div className="self-end text-xs text-slate-500">
+            <div className="self-end text-xs text-muted-foreground">
               {new Date(timestamp).toLocaleString()}
             </div>
           ) : null}

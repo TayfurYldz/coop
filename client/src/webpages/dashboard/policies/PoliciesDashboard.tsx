@@ -212,7 +212,7 @@ export default function PoliciesDashboard() {
       <div key={policy.key} className="flex flex-col w-full">
         <div className="flex flex-col items-stretch mb-6">
           <div
-            className={`flex items-start justify-between pb-4 rounded-md border border-solid w-full bg-white border-slate-200`}
+            className={`flex items-start justify-between pb-4 rounded-md border border-solid w-full bg-card border-border`}
           >
             <div className="flex flex-col w-full">
               <div className="flex items-center gap-6 px-6 pt-6 pb-3">

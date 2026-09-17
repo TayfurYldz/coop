@@ -579,7 +579,7 @@ export default function RulesDashboard() {
                 }
                 value={timeDivision}
               >
-                <SelectTrigger className="w-[180px] bg-white">
+                <SelectTrigger className="w-[180px] bg-card">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

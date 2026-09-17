@@ -92,7 +92,7 @@ export default function CoopButton(
       case 'primary':
         return 'bg-primary text-white fill-white hover:bg-primary/70 border-transparent';
       case 'secondary':
-        return 'bg-white text-primary fill-primary hover:bg-slate-100 hover:opacity-70 border-solid border-primary';
+        return 'bg-card text-primary fill-primary hover:bg-muted hover:opacity-70 border-solid border-primary';
       case 'danger':
         return 'bg-coop-alert-red text-white fill-white hover:bg-coop-alert-red/70 border-transparent';
       case 'green':
@@ -109,7 +109,7 @@ export default function CoopButton(
       type="button"
       className={`${sizeProps} ${colorProps} ${
         buttonIsDisabled
-          ? '!bg-slate-200 !text-slate-400 cursor-not-allowed'
+          ? '!bg-slate-200 !text-slate-400 dark:!bg-muted dark:!text-muted-foreground cursor-not-allowed'
           : 'cursor-pointer'
       } ${
         fontWeight === 'semibold' ? 'font-semibold' : 'font-normal'

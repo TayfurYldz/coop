@@ -178,7 +178,7 @@ export default function PolicyScoresTab() {
         >
           <div className="flex flex-col items-stretch mb-6">
             <div
-              className={`flex flex-col px-6 pt-6 pb-6 rounded-md border border-solid w-full bg-white border-slate-200 `}
+              className={`flex flex-col px-6 pt-6 pb-6 rounded-md border border-solid w-full bg-card border-border `}
             >
               <div className="flex items-start justify-between">
                 <div className="flex flex-col w-full">
@@ -311,7 +311,7 @@ export default function PolicyScoresTab() {
                 ) : null}
               </div>
               {policy.children.length ? (
-                <div className="flex items-center gap-4 pt-4 mb-2 text-sm text-slate-500">
+                <div className="flex items-center gap-4 pt-4 mb-2 text-sm text-muted-foreground">
                   <div>
                     {policy.children.length === 1
                       ? '1 Sub-Policy'

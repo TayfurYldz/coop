@@ -30,7 +30,7 @@ export default function ItemTypeCodeSampleDropdown(props: {
           {Object.values(ApiRoutes).map((route, idx) => (
             <div
               className={`flex flex-row p-2 ${
-                route === selectedRoute ? '' : 'bg-slate-200 hover:bg-slate-100'
+                route === selectedRoute ? '' : 'bg-slate-200 hover:bg-muted'
               }`}
               key={idx}
               onClick={() => {

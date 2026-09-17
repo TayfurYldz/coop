@@ -27,7 +27,7 @@ export function staticValue(input: {
   const { text, outcome, score, matchedValue } = input;
   if ((!score && !matchedValue) || !outcome) {
     return (
-      <div className="p-2 mx-2 mb-1 bg-white rounded-lg whitespace-nowrap h-fit">
+      <div className="p-2 mx-2 mb-1 bg-card rounded-lg whitespace-nowrap h-fit">
         {text}
       </div>
     );
@@ -50,7 +50,7 @@ export function staticValue(input: {
         {prefix}
         {resultText}
       </span>
-      <div className="p-2 mx-2 mb-1 bg-white rounded-lg whitespace-nowrap">
+      <div className="p-2 mx-2 mb-1 bg-card rounded-lg whitespace-nowrap">
         {text}
       </div>
       <span className="flex px-2 font-bold text-center gap-2">
@@ -71,7 +71,7 @@ export default function RuleInsightsSampleDetailView(props: {
   const { ruleId, itemIdentifier, lookback, onClose } = props;
 
   return (
-    <div className="flex flex-col p-4 ml-8 mr-4 border border-solid rounded-lg border-gray-200 bg-white grow max-w-[90%]">
+    <div className="flex flex-col p-4 ml-8 mr-4 border border-solid rounded-lg border-gray-200 bg-card grow max-w-[90%]">
       <div className="flex flex-row items-start justify-between mb-3">
         <div className="flex flex-col">
           <div className="text-lg font-semibold">Details</div>

@@ -353,7 +353,7 @@ export default function RuleDashboardInsightsChart(props: {
         'desc',
       );
       return (
-        <div className="flex flex-col max-w-sm overflow-x-scroll bg-white rounded-lg shadow text-start">
+        <div className="flex flex-col max-w-sm overflow-x-scroll bg-card rounded-lg shadow text-start">
           <div className="p-3 text-white bg-indigo-400 rounded-tl-lg rounded-tr-lg">
             {label}
           </div>
@@ -423,7 +423,7 @@ export default function RuleDashboardInsightsChart(props: {
   };
 
   const emptyChart = (
-    <div className="flex flex-col items-center justify-center gap-3 p-6 rounded bg-slate-100">
+    <div className="flex flex-col items-center justify-center gap-3 p-6 rounded bg-muted">
       <div className="text-sm text-slate-400">
         No data available for the selected time period.
       </div>
@@ -459,7 +459,7 @@ export default function RuleDashboardInsightsChart(props: {
   });
 
   return (
-    <div className="flex flex-col w-full p-6 bg-white border border-solid rounded-lg border-slate-200">
+    <div className="flex flex-col w-full p-6 bg-card border border-solid rounded-lg border-border">
       <div className="flex pb-6">
         <div className="flex flex-row justify-between gap-2 grow">
           <div className="flex items-start gap-2">
@@ -493,7 +493,7 @@ export default function RuleDashboardInsightsChart(props: {
           {!loading && (
             <div className="flex flex-wrap items-start justify-start gap-8">
               <div className="flex flex-col items-start self-center gap-1 text-start">
-                <div className="pr-2 text-sm font-semibold text-slate-500 whitespace-nowrap">
+                <div className="pr-2 text-sm font-semibold text-muted-foreground whitespace-nowrap">
                   Group by
                 </div>
                 <div className="relative block float-left">

@@ -80,7 +80,7 @@ function ManualReviewJobComment(props: {
 
   return (
     <div
-      className="flex flex-row items-center justify-between p-3 bg-white rounded-md"
+      className="flex flex-row items-center justify-between p-3 bg-card rounded-md"
       key={comment.id}
     >
       <div className="flex flex-col items-start">

@@ -199,7 +199,7 @@ function StrikeTTLForm(props: {
     <div>
       <div
         className={
-          'flex flex-col p-4 rounded-md border border-solid cursor-pointer w-full bg-white border-slate-200'
+          'flex flex-col p-4 rounded-md border border-solid cursor-pointer w-full bg-card border-border'
         }
       >
         <div className="flex items-center justify-between gap-6 min-h-[46px]">
@@ -309,7 +309,7 @@ function ThresholdForm(props: {
     <div>
       <div
         className={
-          'flex flex-col p-4 rounded-md border border-solid cursor-pointer w-full bg-white border-slate-200'
+          'flex flex-col p-4 rounded-md border border-solid cursor-pointer w-full bg-card border-border'
         }
       >
         <div className="flex items-center justify-between gap-6 min-h-[46px]">
@@ -534,7 +534,7 @@ function EditableThreshold(props: {
             return (
               <div
                 key={action.id}
-                className="flex items-center gap-3 rounded-md border border-solid border-slate-200 p-2"
+                className="flex items-center gap-3 rounded-md border border-solid border-border p-2"
               >
                 <span className="text-sm font-medium">{action.name}</span>
                 {missing.length > 0 ? (
@@ -542,7 +542,9 @@ function EditableThreshold(props: {
                     Missing: {missing.join(', ')}
                   </span>
                 ) : (
-                  <span className="text-xs text-slate-500">Configured</span>
+                  <span className="text-xs text-muted-foreground">
+                    Configured
+                  </span>
                 )}
                 {props.editing ? (
                   <button

@@ -141,7 +141,7 @@ export default function RuleInsightsActionsChart(props: { ruleId: string }) {
         x={x - 24}
         y={y + 16}
         fill="#71717a"
-        className="pt-3 text-slate-500"
+        className="pt-3 text-muted-foreground"
       >
         {payload.value}
       </text>
@@ -154,7 +154,7 @@ export default function RuleInsightsActionsChart(props: { ruleId: string }) {
       x={x - 12}
       y={y + 4}
       fill="#71717a"
-      className="pr-3 text-slate-500"
+      className="pr-3 text-muted-foreground"
     >
       {truncateAndFormatLargeNumber(Number(payload.value))}
     </text>
@@ -174,7 +174,7 @@ export default function RuleInsightsActionsChart(props: { ruleId: string }) {
         'desc',
       );
       return (
-        <div className="flex flex-col bg-white rounded-lg shadow text-start">
+        <div className="flex flex-col bg-card rounded-lg shadow text-start">
           <div className="p-3 text-white rounded-t-lg bg-primary">{label}</div>
           {data.length > 1 && (
             <div className="flex flex-col">
@@ -346,7 +346,7 @@ export default function RuleInsightsActionsChart(props: { ruleId: string }) {
         className={`flex font-bold border border-solid cursor-pointer h-fit px-2 py-1.5 ${
           chartType === type
             ? 'border-primary bg-primary text-white'
-            : 'border-slate-200 text-slate-300'
+            : 'border-border text-slate-300'
         } ${extraStyle}`}
         onClick={() => {
           if (chartType !== type) {
@@ -391,7 +391,7 @@ export default function RuleInsightsActionsChart(props: { ruleId: string }) {
 
   if (error) {
     return (
-      <div className="flex justify-between w-full p-4 bg-white border border-gray-200 border-solid rounded-lg text-start">
+      <div className="flex justify-between w-full p-4 bg-card border border-gray-200 border-solid rounded-lg text-start">
         <RuleInsightsEmptyCard
           icon={<TriangleAlert />}
           title="Analytics Unavailable"
@@ -402,10 +402,10 @@ export default function RuleInsightsActionsChart(props: { ruleId: string }) {
   }
 
   return (
-    <div className="flex justify-between w-full p-4 bg-white border border-gray-200 border-solid rounded-lg text-start">
+    <div className="flex justify-between w-full p-4 bg-card border border-gray-200 border-solid rounded-lg text-start">
       <div className="flex flex-col w-full">
         <div className="flex items-center justify-between pb-8 mr-4">
-          <div className="flex h-full px-4 py-2 rounded-lg bg-slate-100">
+          <div className="flex h-full px-4 py-2 rounded-lg bg-muted">
             {chartSelection}
             <div className="flex w-px h-full mx-4 my-1 bg-slate-200" />
             <div className="flex items-center justify-start">

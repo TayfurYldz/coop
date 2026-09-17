@@ -150,7 +150,7 @@ export default function NCMECActions(props: {
       case 'Move to Different Queue':
         return 'text-white bg-primary hover:bg-indigo-300';
       case 'Skip':
-        return 'text-slate-500 bg-slate-200 hover:bg-slate-300';
+        return 'text-muted-foreground bg-slate-200 hover:bg-slate-300';
     }
   };
 
@@ -160,7 +160,7 @@ export default function NCMECActions(props: {
       return (
         <div
           key={id}
-          className={`px-2 py-0.5 m-1 text-start rounded cursor-pointer text-slate-500 font-medium bg-white hover:bg-coop-lightblue-hover`}
+          className={`px-2 py-0.5 m-1 text-start rounded cursor-pointer text-muted-foreground font-medium bg-card hover:bg-coop-lightblue-hover`}
           onClick={() => onMoveToDifferentQueue(id)}
         >
           {name}
@@ -177,7 +177,7 @@ export default function NCMECActions(props: {
         <div
           className={`block relative cursor-pointer p-2 rounded-md font-medium justify-center items-center px-4 h-fit border-none ${
             isDisabled
-              ? 'text-slate-300 bg-slate-100'
+              ? 'text-slate-300 bg-muted'
               : `hover:text-white ${color(decision)}`
           }`}
           ref={decision === 'Send' ? sendButtonRef : null}
@@ -200,7 +200,7 @@ export default function NCMECActions(props: {
             ) : (
               <div
                 onClick={(event) => event.stopPropagation()}
-                className="flex flex-col bg-white absolute border border-solid rounded shadow mt-3 p-1 min-w-[180px] z-20 border-slate-200 right-0"
+                className="flex flex-col bg-card absolute border border-solid rounded shadow mt-3 p-1 min-w-[180px] z-20 border-border right-0"
               >
                 <Input
                   autoFocus
@@ -230,7 +230,7 @@ export default function NCMECActions(props: {
       return isDisabled ? (
         <Tooltip
           title={sendDisabledReason}
-          className="relative items-center justify-center block p-2 px-4 font-medium cursor-pointer rounded-md text-slate-300 bg-slate-100 h-fit"
+          className="relative items-center justify-center block p-2 px-4 font-medium cursor-pointer rounded-md text-slate-300 bg-muted h-fit"
         >
           {button}
         </Tooltip>

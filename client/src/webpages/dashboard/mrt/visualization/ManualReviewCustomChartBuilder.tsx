@@ -22,7 +22,7 @@ const ManualReviewCustomChartBuilder = ({
   updateChart,
   deleteChart,
 }: ManualReviewCustomChartBuilderProps) => (
-  <div className="flex flex-col rounded border border-solid border-slate-200 bg-white w-full h-full min-h-[400px]">
+  <div className="flex flex-col rounded border border-solid border-border bg-card w-full h-full min-h-[400px]">
     <div className="flex flex-col p-6 gap-4">
       <div className="flex items-center">
         <Input
@@ -45,7 +45,9 @@ const ManualReviewCustomChartBuilder = ({
         </div>
       </div>
       <div className="flex items-center">
-        <div className="pr-3 font-medium text-slate-500">Select a metric:</div>
+        <div className="pr-3 font-medium text-muted-foreground">
+          Select a metric:
+        </div>
         <Radio.Group
           className="flex items-center justify-end"
           onChange={(event) =>

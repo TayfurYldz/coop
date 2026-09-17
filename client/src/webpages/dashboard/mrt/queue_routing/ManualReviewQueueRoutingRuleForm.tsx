@@ -62,7 +62,7 @@ export default function ManualReviewQueueRoutingRuleForm(props: {
     <div className="flex flex-col items-start gap-3">
       <div className="flex flex-col gap-1">
         <div className="text-base font-semibold">Item Types</div>
-        <div className="text-slate-500">
+        <div className="text-muted-foreground">
           This rule will run if any of the following items is reported:
         </div>
       </div>
@@ -290,7 +290,7 @@ export default function ManualReviewQueueRoutingRuleForm(props: {
   const conditionsSection = (
     <div className="flex flex-col">
       <div className="pb-1 text-base font-semibold">Conditions</div>
-      <div className="pb-2 text-slate-500">
+      <div className="pb-2 text-muted-foreground">
         If all these conditions are met, then your report will end up in the
         queue below.
       </div>
@@ -303,7 +303,7 @@ export default function ManualReviewQueueRoutingRuleForm(props: {
       </div>
       {editing && (
         <div
-          className="flex flex-row self-start p-3 my-4 text-sm font-semibold border border-solid rounded-lg cursor-pointer text-slate-500 hover:text-coop-blue hover:border-coop-blue focus:shadow-coop-light-blue focus:shadow-sm hover:bg-coop-lightblue border-slate-300"
+          className="flex flex-row self-start p-3 my-4 text-sm font-semibold border border-solid rounded-lg cursor-pointer text-muted-foreground hover:text-coop-blue hover:border-coop-blue focus:shadow-coop-light-blue focus:shadow-sm hover:bg-coop-lightblue border-slate-300"
           onClick={() =>
             setTopLevelConditionSet(addConditionSet(rule.conditionSet))
           }

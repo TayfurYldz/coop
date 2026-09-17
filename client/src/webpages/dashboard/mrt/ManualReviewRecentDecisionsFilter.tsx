@@ -221,7 +221,7 @@ export default function ManualReviewRecentDecisionsFilter(props: {
 
   return (
     <div className="flex items-center self-center text-start">
-      <div className="pr-2 font-semibold text-slate-500 whitespace-nowrap">
+      <div className="pr-2 font-semibold text-muted-foreground whitespace-nowrap">
         Filter by
       </div>
       <div className="relative block" ref={componentRef}>
@@ -229,12 +229,12 @@ export default function ManualReviewRecentDecisionsFilter(props: {
           onClick={() => {
             setFilterByMenuVisible(!filterByMenuVisible);
           }}
-          className="flex items-center px-3 py-1 bg-white border border-solid rounded cursor-pointer border-slate-200 hover:border-coop-blue whitespace-nowrap"
+          className="flex items-center px-3 py-1 bg-card border border-solid rounded cursor-pointer border-border hover:border-coop-blue whitespace-nowrap"
         >
           {numberOfSavedFilters === 0 ? (
             <div className="text-slate-400">Select any</div>
           ) : (
-            <div className="flex p-1 bg-slate-200 items-center px-2 py-0.5 gap-1.5 font-medium text-slate-500">
+            <div className="flex p-1 bg-slate-200 items-center px-2 py-0.5 gap-1.5 font-medium text-muted-foreground">
               {numberOfSavedFilters > 1
                 ? `${numberOfSavedFilters} Filters`
                 : '1 Filter'}
@@ -264,7 +264,7 @@ export default function ManualReviewRecentDecisionsFilter(props: {
           />
         </div>
         {filterByMenuVisible && (
-          <div className="flex flex-col bg-white absolute border border-solid rounded shadow mt-1 min-w-[240px] z-20 border-slate-200 right-0">
+          <div className="flex flex-col bg-card absolute border border-solid rounded shadow mt-1 min-w-[240px] z-20 border-border right-0">
             <div className="flex items-center justify-between px-4 py-4">
               <div className="flex items-center text-base font-semibold text-slate-700">
                 Filter
@@ -307,7 +307,7 @@ export default function ManualReviewRecentDecisionsFilter(props: {
                       key={`${index}_column_cell`}
                     >
                       <div
-                        className="mr-2 font-medium text-slate-500 text-start"
+                        className="mr-2 font-medium text-muted-foreground text-start"
                         key={`${index}_column_name`}
                       >
                         {filterByColumnDisplayName(column)}

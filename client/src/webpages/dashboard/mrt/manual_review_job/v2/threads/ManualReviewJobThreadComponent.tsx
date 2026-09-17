@@ -364,11 +364,11 @@ export function ManualReviewJobThreadComponent(props: {
 
   return (
     <>
-      <div className="flex flex-col items-start w-full bg-white border border-gray-200 border-solid rounded-lg grow">
+      <div className="flex flex-col items-start w-full bg-card border border-gray-200 border-solid rounded-lg grow">
         {partialItemsLoading ? (
           <ComponentLoading />
         ) : (
-          <div className="flex flex-col w-full p-5 bg-white rounded-lg space-y-1">
+          <div className="flex flex-col w-full p-5 bg-card rounded-lg space-y-1">
             <div className="flex flex-row items-center gap-4">
               <div className="font-bold text-start bg-slate-200 px-2 py-0.5 rounded w-fit self-center">
                 {threadName}

@@ -963,7 +963,7 @@ export default function ManualReviewRecentDecisions() {
       <Button
         className={`font-semibold text-base rounded ${
           visibleColumnsCount === Object.keys(columnLabels).length
-            ? 'bg-white text-gray-600 hover:bg-white hover:text-gray-600'
+            ? 'bg-card text-gray-600 hover:bg-card hover:text-gray-600'
             : 'bg-gray-600 text-white border-none hover:bg-gray-500'
         }`}
         icon={
@@ -974,7 +974,7 @@ export default function ManualReviewRecentDecisions() {
         Columns
       </Button>
       {columnsMenuVisible && (
-        <div className="absolute left-0 z-20 flex flex-col mt-1 bg-white border border-solid border-gray-300 rounded shadow-md min-w-[240px]">
+        <div className="absolute left-0 z-20 flex flex-col mt-1 bg-card border border-solid border-gray-300 rounded shadow-md min-w-[240px]">
           <div className="px-4 py-4 text-base font-semibold">Show Columns</div>
           <div className="!p-0 !m-0 divider" />
           <div className="flex flex-col px-4 py-2">
@@ -1088,7 +1088,7 @@ export default function ManualReviewRecentDecisions() {
                         ),
                       )}
                     </div>
-                    <div className="text-xs font-medium text-slate-500">
+                    <div className="text-xs font-medium text-muted-foreground">
                       {getReviewerName(values.reviewerId)}
                     </div>
                     <div className="text-xs text-slate-400 whitespace-nowrap">
@@ -1120,7 +1120,7 @@ export default function ManualReviewRecentDecisions() {
               <ComponentLoading />
             </div>
           ) : selectedDecision ? (
-            <div className="flex flex-col items-start w-full h-full p-3 mb-4 ml-3 border border-r-0 border-solid rounded border-slate-200">
+            <div className="flex flex-col items-start w-full h-full p-3 mb-4 ml-3 border border-r-0 border-solid rounded border-border">
               <ManualReviewRecentDecisionSummary
                 selectedDecision={selectedDecision}
                 showCloseButton={true}

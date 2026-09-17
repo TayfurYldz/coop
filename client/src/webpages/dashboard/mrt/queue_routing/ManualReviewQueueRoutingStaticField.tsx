@@ -4,7 +4,7 @@ export function ManualReviewQueueRoutingStaticTextField(props: {
   text: string;
 }) {
   return (
-    <div className="px-4 py-2 font-medium bg-white border border-solid rounded-md border-slate-200 text-slate-500">
+    <div className="px-4 py-2 font-medium bg-card border border-solid rounded-md border-border text-muted-foreground">
       {props.text}
     </div>
   );
@@ -16,7 +16,7 @@ export function ManualReviewQueueRoutingStaticTokenField(props: {
 }) {
   return (
     <div
-      className={`flex flex-row justify-start px-3 space-x-1 border border-solid rounded-md border-slate-200 text-slate-500 ${
+      className={`flex flex-row justify-start px-3 space-x-1 border border-solid rounded-md border-border text-muted-foreground ${
         Boolean(props.reducePadding) ? 'px-2 py-1' : 'px-3 py-2'
       }`}
     >

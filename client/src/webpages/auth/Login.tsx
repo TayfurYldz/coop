@@ -10,7 +10,7 @@ import CoopButton from '../dashboard/components/CoopButton';
 import CoopModal from '../dashboard/components/CoopModal';
 
 import { namedOperations, useGQLLoginMutation } from '../../graphql/generated';
-import LogoBlack from '../../images/LogoBlack.png';
+import AuthLogo from './AuthLogo';
 
 gql`
   mutation Login($input: LoginInput!) {
@@ -150,14 +150,14 @@ export default function Login() {
   );
 
   return (
-    <div className="flex flex-col h-screen p-8 mb-0 bg-slate-100">
+    <div className="flex flex-col h-screen p-8 mb-0 bg-muted dark:bg-background">
       <Helmet>
         <title>Login</title>
       </Helmet>
       <div className="flex flex-col items-center justify-center w-full h-full">
-        <div className="flex flex-col items-stretch justify-center border-none sm:border sm:border-solid border-slate-200 rounded-xl shadow-none sm:shadow h-full w-full sm:h-[560px] sm:w-[460px] m-0 p-0 sm:m-9 sm:px-12">
+        <div className="flex flex-col items-stretch justify-center border-none sm:border sm:border-solid border-border rounded-xl shadow-none sm:shadow h-full w-full sm:h-[560px] sm:w-[460px] m-0 p-0 sm:m-9 sm:px-12">
           <Link to="/" className="flex items-center justify-center w-full my-2">
-            <img src={LogoBlack} alt="Coop Logo" className="h-12" />
+            <AuthLogo />
           </Link>
           <div className="py-5 text-2xl font-bold">
             Sign in to your Coop account

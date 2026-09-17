@@ -54,8 +54,8 @@ export default function RuleFormSignalModalMenuItem(props: {
   const { signal, infoButtonTapped, onClick, imagePath, disabledInfo } = props;
   const item = (
     <div
-      className={`flex flex-col rounded-lg border border-solid border-slate-200 p-4 w-60 cursor-pointer drop-shadow h-full ${
-        disabledInfo.disabled ? 'bg-gray-100' : 'bg-white hover:bg-sky-100'
+      className={`flex flex-col rounded-lg border border-solid border-border p-4 w-60 cursor-pointer drop-shadow h-full ${
+        disabledInfo.disabled ? 'bg-gray-100' : 'bg-card hover:bg-sky-100'
       }`}
       onClick={() => {
         if (!disabledInfo.disabled) {

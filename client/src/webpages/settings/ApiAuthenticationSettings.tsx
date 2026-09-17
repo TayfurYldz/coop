@@ -434,7 +434,7 @@ const ApiAuthenticationSettings = () => {
       {/* API Key rotation confirmation dialog */}
       {showRotationDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+          <div className="bg-card p-6 rounded-lg max-w-md w-full mx-4">
             <Heading size="LG" className="mb-4">
               Rotate API Key
             </Heading>
@@ -467,7 +467,7 @@ const ApiAuthenticationSettings = () => {
       {/* Webhook signing key rotation confirmation dialog */}
       {showWebhookDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+          <div className="bg-card p-6 rounded-lg max-w-md w-full mx-4">
             <Heading size="LG" className="mb-4">
               Generate new webhook verification key
             </Heading>

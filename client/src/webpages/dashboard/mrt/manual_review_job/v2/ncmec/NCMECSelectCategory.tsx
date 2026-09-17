@@ -18,7 +18,7 @@ export default function NCMECSelectCategory(props: {
         className={`${style} ${
           selectedCategory === 'A1'
             ? `text-white bg-red-400`
-            : `text-neutral-300 bg-white hover:text-white hover:bg-red-300`
+            : `text-neutral-300 bg-card hover:text-white hover:bg-red-300`
         }`}
       >
         A1
@@ -29,7 +29,7 @@ export default function NCMECSelectCategory(props: {
         className={`${style} ${
           selectedCategory === 'A2'
             ? `text-white bg-orange-400`
-            : `text-neutral-300 bg-white hover:text-white hover:bg-orange-300`
+            : `text-neutral-300 bg-card hover:text-white hover:bg-orange-300`
         }`}
       >
         A2
@@ -39,8 +39,8 @@ export default function NCMECSelectCategory(props: {
         onClick={() => onClick('B1')}
         className={`${style} ${
           selectedCategory === 'B1'
-            ? `text-slate-500 bg-amber-400`
-            : `text-neutral-300 bg-white hover:text-white hover:bg-amber-300`
+            ? `text-muted-foreground bg-amber-400`
+            : `text-neutral-300 bg-card hover:text-white hover:bg-amber-300`
         }`}
       >
         B1
@@ -51,7 +51,7 @@ export default function NCMECSelectCategory(props: {
         className={`${style} ${
           selectedCategory === 'B2'
             ? `text-white bg-blue-400`
-            : `text-neutral-300 bg-white hover:text-white hover:bg-blue-300`
+            : `text-neutral-300 bg-card hover:text-white hover:bg-blue-300`
         }`}
       >
         B2
@@ -62,7 +62,7 @@ export default function NCMECSelectCategory(props: {
         className={`${style} ${
           selectedCategory === 'None'
             ? `text-white bg-slate-500`
-            : `text-neutral-300 bg-white hover:text-white hover:bg-indigo-300`
+            : `text-neutral-300 bg-card hover:text-white hover:bg-indigo-300`
         }`}
       >
         None

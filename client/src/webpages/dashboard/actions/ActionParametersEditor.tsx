@@ -508,7 +508,7 @@ function MultiSelectDropdown({
           id={id}
           disabled={disabled}
           className={cn(
-            'flex w-full items-center justify-between whitespace-nowrap rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-normal transition-colors',
+            'flex w-full items-center justify-between whitespace-nowrap rounded-lg border border-gray-200 bg-card px-4 py-3 text-sm font-normal transition-colors',
             'hover:border-gray-300',
             'focus:z-10 focus:border-indigo-500 focus:shadow-focus-indigo focus:outline-none',
             'disabled:cursor-not-allowed disabled:opacity-50',

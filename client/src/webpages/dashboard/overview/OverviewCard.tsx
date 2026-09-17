@@ -575,7 +575,7 @@ export default function OverviewCard(props: {
   ]);
 
   return (
-    <div className="flex justify-between p-4 bg-white border border-solid rounded-lg border-slate-200 grow">
+    <div className="flex justify-between p-4 bg-card border border-solid rounded-lg border-border grow">
       <div className="flex flex-col w-full text-start">
         <div className="flex justify-between w-full">
           <div className="text-base font-bold">{title}</div>

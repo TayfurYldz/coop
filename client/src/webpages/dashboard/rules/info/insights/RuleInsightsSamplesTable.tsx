@@ -645,7 +645,7 @@ export default function RuleInsightsSamplesTable(props: { ruleId: string }) {
 
   const ruleVersionDropdown = (
     <div className="flex items-center justify-end">
-      <div className="flex items-center pr-2 text-base font-medium text-slate-500">
+      <div className="flex items-center pr-2 text-base font-medium text-muted-foreground">
         Show Samples Matching:
       </div>
       <Select value={lookback} onChange={(value) => updateLookback(value)}>
@@ -670,7 +670,7 @@ export default function RuleInsightsSamplesTable(props: { ruleId: string }) {
       <div className="flex items-center justify-between pb-4">
         <div className="flex flex-col">
           <div className="flex text-xl font-semibold">Samples</div>
-          <div className="flex text-base text-slate-500">
+          <div className="flex text-base text-muted-foreground">
             Below are examples of content submissions that were caught by this
             Rule.
           </div>

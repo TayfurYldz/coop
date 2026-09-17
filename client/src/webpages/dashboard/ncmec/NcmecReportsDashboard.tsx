@@ -733,7 +733,7 @@ export default function NcmecReportsDashboard() {
                     className={`font-semibold text-base rounded ${
                       Object.values(columnVisibility).filter(Boolean).length ===
                       Object.keys(columnLabels).length
-                        ? 'bg-white text-gray-600 hover:bg-white hover:text-gray-600'
+                        ? 'bg-card text-gray-600 hover:bg-card hover:text-gray-600'
                         : 'bg-gray-600 text-white border-none hover:bg-gray-500'
                     }`}
                     icon={<GridAlt className="inline-block w-4 h-4 mr-2" />}
@@ -742,7 +742,7 @@ export default function NcmecReportsDashboard() {
                     Columns
                   </Button>
                   {columnsMenuVisible && (
-                    <div className="absolute left-0 z-20 flex flex-col mt-1 bg-white border border-solid border-gray-300 rounded shadow-md min-w-[240px]">
+                    <div className="absolute left-0 z-20 flex flex-col mt-1 bg-card border border-solid border-gray-300 rounded shadow-md min-w-[240px]">
                       <div className="px-4 py-4 text-base font-semibold">
                         Show Columns
                       </div>
@@ -770,7 +770,7 @@ export default function NcmecReportsDashboard() {
             }
           />
           {searchId && tableData?.length === 0 ? (
-            <div className="flex items-center self-center justify-center h-full p-8 mt-8 text-base text-center rounded shadow w-fit bg-slate-100 text-slate-600">
+            <div className="flex items-center self-center justify-center h-full p-8 mt-8 text-base text-center rounded shadow w-fit bg-muted text-slate-600">
               Don't see the report?{' '}
               <Button type="link" onClick={fetchReportById}>
                 Click here to search further back

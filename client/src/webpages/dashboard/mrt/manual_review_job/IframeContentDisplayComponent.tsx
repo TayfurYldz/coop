@@ -170,12 +170,12 @@ export default function IframeContentDisplayComponent(props: {
       )}
       <div className="relative w-full min-h-[800px] h-[800px] border border-solid rounded-md overflow-hidden">
         {isIframeLoading && (
-          <div className="absolute inset-0 flex items-center justify-center z-10 bg-white bg-opacity-75">
+          <div className="absolute inset-0 flex items-center justify-center z-10 bg-card bg-opacity-75">
             <LoaderCircle className="h-8 w-8 animate-spin text-indigo-500" />
           </div>
         )}
         {iframeError && (
-          <div className="absolute inset-0 flex items-center justify-center z-10 bg-white bg-opacity-75">
+          <div className="absolute inset-0 flex items-center justify-center z-10 bg-card bg-opacity-75">
             <div className="text-red-500">{iframeError}</div>
           </div>
         )}

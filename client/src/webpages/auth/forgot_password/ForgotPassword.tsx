@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import CoopModal from '@/webpages/dashboard/components/CoopModal';
 
 import { useGQLSendPasswordResetMutation } from '../../../graphql/generated';
-import LogoBlack from '../../../images/LogoBlack.png';
+import AuthLogo from '../AuthLogo';
 
 gql`
   mutation SendPasswordReset($input: SendPasswordResetInput!) {
@@ -74,14 +74,14 @@ export default function ForgotPassword() {
   );
 
   return (
-    <div className="flex flex-col h-screen p-8 mb-0 bg-slate-100">
+    <div className="flex flex-col h-screen p-8 mb-0 bg-muted dark:bg-background">
       <Helmet>
         <title>Forgot Password</title>
       </Helmet>
       <div className="flex flex-col items-center justify-center w-full h-full">
-        <div className="flex flex-col items-start justify-center border border-solid border-slate-200 shadow rounded-xl my-1.5 mx-9 p-12 max-w-md">
+        <div className="flex flex-col items-start justify-center border border-solid border-border shadow rounded-xl my-1.5 mx-9 p-12 max-w-md">
           <Link to="/" className="flex items-center justify-center w-full my-2">
-            <img src={LogoBlack} alt="Coop Logo" className="h-12" />
+            <AuthLogo />
           </Link>
           <div className="py-5 text-2xl font-bold">Forgot your password?</div>
           <div className="mb-6 text-sm text-start">

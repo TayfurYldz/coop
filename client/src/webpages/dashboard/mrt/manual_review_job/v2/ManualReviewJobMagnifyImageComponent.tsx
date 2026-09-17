@@ -134,7 +134,7 @@ export default function ManualReviewJobMagnifyImageComponent(props: {
       content={
         <div className="flex flex-col">
           {finalImageUrl ? (
-            <div className="flex flex-row items-start justify-between font-semibold space-x-2 text-slate-500">
+            <div className="flex flex-row items-start justify-between font-semibold space-x-2 text-muted-foreground">
               <div className="flex flex-col items-start justify-start h-full gap-1">
                 Profile Picture
                 <img
@@ -187,7 +187,7 @@ export default function ManualReviewJobMagnifyImageComponent(props: {
             <div
               className={`ml-2 font-medium ${
                 labelTruncationType === 'wrap' ? 'break-all' : 'truncate'
-              } ${borderAndTextColor ?? 'text-slate-500'}`}
+              } ${borderAndTextColor ?? 'text-muted-foreground'}`}
             >
               {label}
             </div>

@@ -163,7 +163,7 @@ export default function ManualReviewRecentDecisionSummary(props: {
       <div className="flex flex-col w-full p-4 mb-6 rounded bg-coop-lightblue">
         <div className="flex flex-wrap items-center justify-between w-full gap-3 pb-2">
           <div className="text-lg font-bold">Decision Summary</div>
-          <div className="text-sm font-medium text-slate-500">
+          <div className="text-sm font-medium text-muted-foreground">
             {parseDatetimeToReadableStringInCurrentTimeZone(
               selectedDecision.createdAt,
             )}
@@ -179,30 +179,30 @@ export default function ManualReviewRecentDecisionSummary(props: {
         </div>
         <div className="flex gap-8">
           <div className="flex flex-col gap-2">
-            <div className="flex flex-col text-slate-500">
+            <div className="flex flex-col text-muted-foreground">
               <div className="font-bold text-slate-700">Reviewer</div>
               {getReviewerName(selectedDecision.reviewerId)}
             </div>
-            <div className="flex flex-col text-slate-500">
+            <div className="flex flex-col text-muted-foreground">
               <div className="font-bold text-slate-700">Queue</div>
               {getQueueName(selectedDecision.queueId)}
             </div>
             {selectedDecision.decisionReason ? (
-              <div className="flex flex-col text-slate-500">
+              <div className="flex flex-col text-muted-foreground">
                 <div className="font-bold text-slate-700">Decision Reason</div>
                 {selectedDecision.decisionReason}
               </div>
             ) : null}
           </div>
           <div className="flex flex-col gap-2">
-            <div className="flex flex-col text-slate-500">
+            <div className="flex flex-col text-muted-foreground">
               <div className="font-bold text-slate-700">Primary Decision</div>
               {selectedDecision.decisions.map((decision, index) => (
                 <Fragment key={index}>{actionPoliciesPair(decision)}</Fragment>
               ))}
             </div>
             {selectedDecision.relatedActions.length > 0 ? (
-              <div className="flex flex-col text-slate-500">
+              <div className="flex flex-col text-muted-foreground">
                 <div className="font-bold text-slate-700">Related Actions</div>
                 {selectedDecision.relatedActions.map((action, index) => (
                   <Fragment key={index}>{actionPoliciesPair(action)}</Fragment>

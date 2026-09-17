@@ -88,10 +88,10 @@ export default function ItemsByIpAddress(props: {
               >
                 <div className="flex flex-col">
                   <div className="font-bold">{item.type.name}</div>
-                  <div className="text-sm text-slate-500">{item.id}</div>
+                  <div className="text-sm text-muted-foreground">{item.id}</div>
                 </div>
                 {item.submissionTime ? (
-                  <div className="text-sm text-slate-500">
+                  <div className="text-sm text-muted-foreground">
                     {new Date(item.submissionTime).toLocaleString()}
                   </div>
                 ) : null}

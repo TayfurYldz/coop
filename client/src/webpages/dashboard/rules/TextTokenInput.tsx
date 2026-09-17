@@ -76,7 +76,7 @@ export default function TextTokenInput(props: {
       {title && <div className="text-xs font-bold">{title}</div>}
       <div
         key={[uniqueKey, 'TextTokenInput-field'].join('_')}
-        className={`flex flex-row flex-wrap rounded px-2.5 border border-solid border-[#d9d9d9] cursor-text text-base bg-white hover:border-primary focus:border-primary ${
+        className={`flex flex-row flex-wrap rounded px-2.5 border border-solid border-[#d9d9d9] cursor-text text-base bg-card hover:border-primary focus:border-primary ${
           tokens.length > 0 ? 'py-[3px]' : 'py-[5px]'
         }`}
         onClick={onClick}
