@@ -10,7 +10,7 @@ import {
 import { filterDecisionsToFailedSubmissions } from '../../services/ncmecService/index.js';
 import { UserPermission } from '../../services/userManagementService/index.js';
 import { __throw } from '../../utils/misc.js';
-import { isValidUrl } from '../../utils/url.js';
+import { isValidUrl } from '../../utils/urlValidation.js';
 import {
   type GQLIntegrationConfig,
   type GQLMatchingBanksResolvers,
