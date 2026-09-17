@@ -5,41 +5,6 @@ declare module 'stream-to-blob' {
   ): Promise<Blob>;
 }
 
-declare module 'latlon-geohash' {
-  export interface Point {
-    lat: number;
-    lon: number;
-  }
-
-  /**
-   * Encodes latitude/longitude to geohash, either to specified precision or to automatically
-   * evaluated precision.
-   *
-   * @param   lat - Latitude in degrees.
-   * @param   lng - Longitude in degrees.
-   * @param   [precision] - Number of characters in resulting geohash.
-   * @returns Geohash of supplied latitude/longitude.
-   * @throws  Invalid geohash.
-   *
-   * @example
-   *     var geohash = Geohash.encode(52.205, 0.119, 7); // geohash: 'u120fxw'
-   */
-  export function encode(lat: number, lng: number, precision?: number): string;
-
-  /**
-   * Decode geohash to latitude/longitude (location is approximate centre of geohash cell,
-   *     to reasonable precision).
-   *
-   * @param   geohash - Geohash string to be converted to latitude/longitude.
-   * @returns (Center of) geohashed location.
-   * @throws  Invalid geohash.
-   *
-   * @example
-   *     var latlon = Geohash.decode('u120fxw'); // latlon: { lat: 52.205, lon: 0.1188 }
-   */
-  export function decode(geohash: string): Point;
-}
-
 namespace NodeJS {
   interface ProcessEnv {
     DATABASE_HOST?: string;

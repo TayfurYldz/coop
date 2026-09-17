@@ -106,6 +106,7 @@
     "@types/graphql-depth-limit": "^1.1.6",
     "@types/jest": "^29.2.4",
     "@types/js-yaml": "^4.0.5",
+    "@types/latlon-geohash": "^2.0.4",
     "@types/lodash": "^4.14.179",
     "@types/morgan": "^1.9.3",
     "@types/node": "^24.13.5",
