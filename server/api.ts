@@ -18,7 +18,9 @@ import {
   ATTR_EXCEPTION_TYPE,
 } from '@opentelemetry/semantic-conventions';
 import appConfig from '#config/app';
+import graphqlConfig from '#config/graphql';
 import securityConfig from '#config/security';
+import sessionConfig from '#config/session';
 import connectPgSimple from 'connect-pg-simple';
 import cors from 'cors';
 import express, { type ErrorRequestHandler, type Request } from 'express';
@@ -36,7 +38,6 @@ import { buildPassportContext } from './graphql/utils/passportContext.js';
 import { resolveSamlUser } from './graphql/utils/resolveSamlUser.js';
 import { safeDepthLimit } from './graphql/utils/safeDepthLimit.js';
 import { type Dependencies } from './iocContainer/index.js';
-import { safeGetEnvInt } from './iocContainer/utils.js';
 import controllers from './routes/index.js';
 import { createBodySchemaValidator } from './utils/bodySchemaValidation.js';
 import { jsonStringify } from './utils/encoding.js';
@@ -114,14 +115,9 @@ export default async function makeApiServer(deps: Dependencies) {
   const sessionStoreInstance = new sessionStore({ pool: KyselyPgPool });
   app.use(
     session({
-      secret: appConfig.session.secret,
+      secret: sessionConfig.secret,
       store: sessionStoreInstance,
-      cookie: {
-        secure: appConfig.session.cookie.secure,
-        httpOnly: appConfig.session.cookie.httpOnly,
-        sameSite: 'lax',
-        maxAge: appConfig.session.cookie.maxAge,
-      },
+      cookie: sessionConfig.cookie,
       resave: false,
       saveUninitialized: false,
       proxy: true,
@@ -249,7 +245,7 @@ export default async function makeApiServer(deps: Dependencies) {
         ? [ApolloServerPluginLandingPageDisabled()]
         : []),
     ],
-    validationRules: [safeDepthLimit(safeGetEnvInt('GRAPHQL_MAX_DEPTH', 10))],
+    validationRules: [safeDepthLimit(graphqlConfig.maxDepth)],
     introspection: !appConfig.inProduction,
     formatError(formattedError, error) {
       // unwrapResolverError removes the GraphQLError wrapper added by graphql-js

@@ -1,34 +1,40 @@
 import env from '#start/env';
 
-const NODE_ENV = env.get('NODE_ENV', 'development');
-
-// Derived once so the comparison lives in a single place. `NODE_ENV === 'prod'`
-// is silently non-production everywhere it appears; `inProduction` is not.
-const inProduction = NODE_ENV === 'production';
-const inDev = NODE_ENV === 'development';
-const inTest = NODE_ENV === 'test';
-
+/**
+ * Derived on access rather than at import.
+ *
+ * `env.get` reads the validated values `Env.create` produced, and `env.set`
+ * updates them — so a getter lets a test say `env.set('NODE_ENV', 'production')`
+ * and have the rest of the application agree. A constant would instead hold
+ * whatever the environment was when this module was first imported.
+ *
+ * `NODE_ENV === 'prod'` is silently non-production everywhere it appears;
+ * `inProduction` is not, which is why the comparison lives here and not at each
+ * call site.
+ */
 export default {
-  env: NODE_ENV,
-  inProduction,
-  inDev,
-  inTest,
+  get env() {
+    return env.get('NODE_ENV', 'development');
+  },
+  get inProduction() {
+    return this.env === 'production';
+  },
+  get inDev() {
+    return this.env === 'development';
+  },
+  get inTest() {
+    return this.env === 'test';
+  },
 
   // Public origin of the frontend. Used to build the links and redirects the
   // application hands out, so it must be the origin a browser reaches, not an
   // internal one.
-  uiUrl: env.get('UI_URL'),
+  get uiUrl() {
+    return env.get('UI_URL');
+  },
 
   /** Identifies this process in traces and as the Postgres `application_name`. */
-  serviceName: env.get('OTEL_SERVICE_NAME', 'coop-service'),
-
-  session: {
-    secret: env.get('SESSION_SECRET'),
-    cookie: {
-      secure: inProduction,
-      httpOnly: true,
-      // 30 Days in milliseconds
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    },
+  get serviceName() {
+    return env.get('OTEL_SERVICE_NAME', 'coop-service');
   },
 };
