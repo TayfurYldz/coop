@@ -1,12 +1,10 @@
 /* eslint-disable max-lines */
-import { createRequire } from 'module';
 import Bottle from '@ethanresnick/bottlejs';
 import opentelemetry from '@opentelemetry/api';
 import { type ItemIdentifier } from '@roostorg/coop-types';
 import databaseConfig from '#config/database';
 import redisConfig, { type RedisConnection } from '#config/redis';
 import scyllaConfig from '#config/scylla';
-import { type Host as ScyllaHost } from 'cassandra-driver';
 import IORedis, { type Cluster } from 'ioredis';
 import { Kysely, PostgresDialect } from 'kysely';
 import _ from 'lodash';
@@ -58,8 +56,9 @@ import {
 import makeRuleEvaluator, {
   type RuleEvaluator,
 } from '../rule_engine/RuleEvaluator.js';
-import { Scylla } from '../scylla/index.js';
+import type { Scylla } from '../scylla/index.js';
 import NoOpScylla from '../scylla/noOpScylla.js';
+import ScyllaDatabase from '../scylla/scyllaDatabase.js';
 import {
   makeActionStatisticsService,
   type ActionStatisticsService,
@@ -238,7 +237,7 @@ import {
 } from '../utils/correlationIds.js';
 import { getUsableCoreCount } from '../utils/cpu-helpers.js';
 import { jsonStringify, type JsonOf } from '../utils/encoding.js';
-import { logErrorJson, logJson } from '../utils/logging.js';
+import { logJson } from '../utils/logging.js';
 import { __throw, assertUnreachable } from '../utils/misc.js';
 import SafeTracer from '../utils/SafeTracer.js';
 import {
@@ -252,10 +251,6 @@ import { registerGqlDataSources } from './services/gqlDataSources.js';
 import { registerWorkersAndJobs } from './services/workersAndJobs.js';
 import { register } from './utils.js';
 
-// the otel instrumentation currently intercepts require statements. support for
-// esm support is experimental so we should wait until it is stable
-const require = createRequire(import.meta.url);
-const { Client: ScyllaClient } = require('cassandra-driver');
 export type { DataSources } from './services/gqlDataSources.js';
 
 export type ItemSubmissionMessageKey = {
@@ -321,10 +316,7 @@ export interface Dependencies {
   // that each dependent service can type its arg more specifically with the set
   // of tables it is responsible for / allowed to query.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Scylla: Scylla<any> & {
-    connect: () => Promise<void>;
-    close: () => Promise<void>;
-  };
+  Scylla: Scylla<any>;
 
   // Data Warehouse abstraction
   DataWarehouse: IDataWarehouse;
@@ -655,67 +647,7 @@ export default async function getBottle(
       return new NoOpScylla();
     }
 
-    const scyllaDriver = new ScyllaClient(scyllaConfig.connection);
-
-    // Surface cluster state changes so reconnect storms are visible in logs.
-    scyllaDriver.on('hostUp', (host: ScyllaHost) => {
-      // eslint-disable-next-line no-restricted-syntax
-      logJson(`scylla.hostUp address=${host.address}`);
-    });
-    scyllaDriver.on('hostDown', (host: ScyllaHost) => {
-      // eslint-disable-next-line no-restricted-syntax
-      logJson(`scylla.hostDown address=${host.address}`);
-    });
-    // Forward driver-internal warnings/errors (auth, TLS, connection drops,
-    // etc.); skip the very chatty `info`/`verbose` levels.
-    scyllaDriver.on(
-      'log',
-      (
-        level: 'verbose' | 'info' | 'warning' | 'error',
-        source: string,
-        message: string,
-        furtherInfo?: unknown,
-      ) => {
-        if (level !== 'warning' && level !== 'error') {
-          return;
-        }
-        const wrapped = new Error(`scylla.${level}: [${source}] ${message}`);
-        if (furtherInfo instanceof Error) {
-          wrapped.stack = furtherInfo.stack ?? wrapped.stack;
-        }
-        // eslint-disable-next-line no-restricted-syntax
-        logErrorJson({
-          message: `scylla.driver.${level}`,
-          error: wrapped,
-        });
-      },
-    );
-
-    // cassandra-driver leaks ~4 HostMap listeners per failed `Client._connect()`
-    // retry and never recreates the HostMap, so the default cap of 10 trips
-    // after ~3 failures. Raise it so transient blips don't spam the warning,
-    // but keep it bounded so a true runaway is still noticeable.
-    const controlConnection = (
-      scyllaDriver as unknown as {
-        controlConnection?: {
-          hosts?: { setMaxListeners?: (n: number) => void };
-        };
-      }
-    ).controlConnection;
-    controlConnection?.hosts?.setMaxListeners?.(15);
-
-    class ClosableScylla<
-      DB extends Record<string, Record<string, unknown>>,
-    > extends Scylla<DB> {
-      /** Eagerly connect; idempotent once `connected` is true. */
-      async connect() {
-        return scyllaDriver.connect();
-      }
-      async close() {
-        return scyllaDriver.shutdown();
-      }
-    }
-    return new ClosableScylla(scyllaDriver);
+    return new ScyllaDatabase(scyllaConfig.connection);
   });
 
   bottle.factory('ItemInvestigationService', (container) => {
