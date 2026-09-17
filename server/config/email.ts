@@ -10,15 +10,26 @@ import env from '#start/env';
  * change that adds an SMTP transport, so this module only moves the reads.
  */
 export default {
-  transport: env.get('EMAIL_TRANSPORT'),
+  /** Derived on access so `env.set('EMAIL_TRANSPORT', …)` is respected. */
+  get transport() {
+    return env.get('EMAIL_TRANSPORT');
+  },
 
   /** Only consulted when no SES client is injected and `transport` is unset. */
-  sendgridApiKey: env.get('SENDGRID_API_KEY'),
+  get sendgridApiKey() {
+    return env.get('SENDGRID_API_KEY');
+  },
 
   /** The addresses Coop sends as. */
   addresses: {
-    noReply: env.get('NOREPLY_EMAIL', 'noreply@example.com'),
-    support: env.get('SUPPORT_EMAIL', 'support@example.com'),
-    team: env.get('TEAM_EMAIL', 'team@example.com'),
+    get noReply() {
+      return env.get('NOREPLY_EMAIL', 'noreply@example.com');
+    },
+    get support() {
+      return env.get('SUPPORT_EMAIL', 'support@example.com');
+    },
+    get team() {
+      return env.get('TEAM_EMAIL', 'team@example.com');
+    },
   },
 };
