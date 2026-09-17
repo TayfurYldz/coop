@@ -1,4 +1,3 @@
-import os from 'node:os';
 import path from 'path';
 import { ApolloServer } from '@apollo/server';
 import { unwrapResolverError } from '@apollo/server/errors';
@@ -53,39 +52,6 @@ import {
   type NonEmptyArray,
 } from './utils/typescript-types.js';
 
-function getCPUInfo() {
-  const cpus = os.cpus();
-
-  const total = cpus.reduce(
-    (acc, cpu) =>
-      acc +
-      cpu.times.user +
-      cpu.times.nice +
-      cpu.times.sys +
-      cpu.times.irq +
-      cpu.times.idle,
-    0,
-  );
-  const idle = cpus.reduce((acc, cpu) => acc + cpu.times.idle, 0);
-
-  return {
-    idle,
-    total,
-  };
-}
-
-async function getCPUUsage() {
-  const stats1 = getCPUInfo();
-  const startIdle = stats1.idle;
-  const startTotal = stats1.total;
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const stats2 = getCPUInfo();
-  const endIdle = stats2.idle;
-  const endTotal = stats2.total;
-  return 1 - (endIdle - startIdle) / (endTotal - startTotal);
-}
-
 // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 const env = process.env.NODE_ENV || 'development';
 const sessionStore = connectPgSimple(session);
@@ -119,10 +85,8 @@ export default async function makeApiServer(deps: Dependencies) {
   app.use(express.json({ limit: '50mb' }));
 
   app.get('/ready', async (_req, res) => {
-    const cpuUsage = await getCPUUsage();
-    if (cpuUsage > 0.75) {
-      return res.status(500).send('Unhealthy');
-    }
+    // TODO: Decide if we want to check for database connectivity here,
+    // or if services need to fail gracefully.
     return res.status(200).send('Healthy');
   });
 
