@@ -4,6 +4,7 @@ import opentelemetry from '@opentelemetry/api';
 import { type ItemIdentifier } from '@roostorg/coop-types';
 import databaseConfig from '#config/database';
 import warehouseConfig from '#config/dataWarehouse';
+import ncmecConfig from '#config/ncmec';
 import redisConfig, { type RedisConnection } from '#config/redis';
 import scyllaConfig from '#config/scylla';
 import IORedis, { type Cluster } from 'ioredis';
@@ -1038,16 +1039,9 @@ export default async function getBottle(
                       getItemTypeEventuallyConsistent:
                         container.getItemTypeEventuallyConsistent,
                     });
-                  // Submissions go to the NCMEC test endpoint
-                  // (exttest.cybertip.org) unless the deployment is explicitly
-                  // configured for production via NCMEC_ENV=production. Operators
-                  // are responsible for matching this to whether the credentials
-                  // configured in Settings → NCMEC are production or test
-                  // credentials issued by NCMEC.
-                  const isTest = process.env.NCMEC_ENV !== 'production';
                   await container.NcmecService.submitReport(
                     reportParams,
-                    isTest,
+                    ncmecConfig.isTest,
                   );
                   const actionAndPolicy =
                     await container.NcmecService.getNCMECActionsToRunAndPolicies(
@@ -1062,7 +1056,7 @@ export default async function getBottle(
                     actionAndPolicy != null &&
                     actionAndPolicy.actionsToRunIds != null &&
                     isNonEmptyArray(decisionActions) &&
-                    !isTest
+                    !ncmecConfig.isTest
                   ) {
                     await publishActions({
                       decisionActions,
