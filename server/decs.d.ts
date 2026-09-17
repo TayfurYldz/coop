@@ -1,20 +1,3 @@
-declare module '@graphql-tools/schema' {
-  import { GraphQLSchema } from 'graphql';
-
-  import { IExecutableSchemaDefinition } from './types.js';
-
-  export declare function makeExecutableSchema<TContext = any>({
-    typeDefs,
-    resolvers,
-    resolverValidationOptions,
-    parseOptions,
-    inheritResolversFromInterfaces,
-    pruningOptions,
-    updateResolversInPlace,
-    schemaExtensions,
-  }: IExecutableSchemaDefinition<TContext>): GraphQLSchema;
-}
-
 declare module 'stream-to-blob' {
   export default function streamToBlob(
     stream: NodeJS.ReadableStream,
