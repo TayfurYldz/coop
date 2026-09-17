@@ -621,7 +621,7 @@ export function toOriginalFileHashes(opts: {
     const trimmedAlgorithm = algorithm.trim();
     if (trimmedHash === '' || trimmedAlgorithm === '') return;
     const hashType = trimmedAlgorithm.toUpperCase();
-    const key = `${hashType} ${trimmedHash}`;
+    const key = `${hashType}\u0000${trimmedHash}`;
     if (seen.has(key)) return;
     seen.add(key);
     result.push({ _text: trimmedHash, _attributes: { hashType } });
