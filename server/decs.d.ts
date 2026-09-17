@@ -1,16 +1,3 @@
-declare namespace Express {
-  // Extend Express.User so passport callbacks (serializeUser, etc.) see the
-  // fields we actually use without per-call `as any` casts.
-  interface User {
-    id: string;
-  }
-}
-
-declare interface String {
-  toUpperCase<T extends string>(this: T): Uppercase<T>;
-  toLowerCase<T extends string>(this: T): Lowercase<T>;
-}
-
 declare module '@graphql-tools/schema' {
   import { GraphQLSchema } from 'graphql';
 
