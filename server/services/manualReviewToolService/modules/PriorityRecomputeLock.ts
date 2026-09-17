@@ -5,9 +5,7 @@ import { v1 as uuidv1 } from 'uuid';
 type RedisClient = IORedis.Redis | Cluster;
 
 /**
- * Releases the lock only if it still holds our token. Without the check, a
- * sweep that overran its TTL would delete a lock another instance has since
- * legitimately acquired.
+ * Releases the lock only if it still holds our token.
  */
 const RELEASE_IF_OWNED = `
 if redis.call("GET", KEYS[1]) == ARGV[1] then
@@ -18,8 +16,7 @@ end
 `;
 
 /**
- * How long a held lock survives without the holder releasing it. Long enough
- * to cover a sweep, which is one Redis round-trip per pending job.
+ * How long a held lock survives without being released.
  */
 export const RECOMPUTE_LOCK_TTL_MS = 5 * 60 * 1000;
 
@@ -30,9 +27,6 @@ export const RECOMPUTE_LOCK_POLL_INTERVAL_MS = 500;
 /**
  * A lock per (org, queue) so only one priority sweep runs at a time, no matter
  * how many API processes are deployed.
- *
- * Keys are hash-tagged with the org id to match the sharding QueueOperations
- * uses for its Bull queues, so an org's keys stay on one Redis slot.
  */
 export default class PriorityRecomputeLock {
   constructor(private readonly redis: RedisClient) {}

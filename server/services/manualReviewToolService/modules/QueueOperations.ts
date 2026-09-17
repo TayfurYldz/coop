@@ -1354,20 +1354,15 @@ export default class QueueOperations {
     await this.checkQueueExists(orgId, queueId);
     const worker = await this.getBullAppealWorker({ orgId, queueId });
 
-    let hasDecision = true;
-    while (hasDecision) {
+    while (true) {
       const job = await worker.getNextJob(lockToken);
 
       if (!job) {
         return null;
       }
 
-      // There is a race condition due to the locking mechanism where a job can
-      // be decided on but not dequeued, so we check here if the first job in the
-      // queue has a decision, and if so use the lock token to immediately
-      // remove it, then grab a new job and return to the caller. it is very
-      // unlikely that there are multiple jobs like this at the front of the
-      // queue, but not impossible.
+      // Race condition: a job can be decided but not yet dequeued.
+      // If the front job already has a decision, remove it and grab the next.
       const decision = await this.pgQueryReadReplica
         .selectFrom('manual_review_tool.manual_review_decisions')
         .where('created_at', '>=', new Date('2023-10-01'))
@@ -1375,23 +1370,17 @@ export default class QueueOperations {
         .where('id', '=', jobIdToGuid(job.data.id))
         .executeTakeFirst();
 
-      hasDecision = decision !== undefined;
-
-      if (hasDecision) {
-        await this.removeJob({
-          orgId,
-          queueId,
-          lockToken,
-          jobId: job.data.id,
-        }).catch(() => {});
-        // then continue while loop
-      } else {
-        // this is the most likely case, where there is a job
-        // and it has never been decided before
+      if (decision === undefined) {
         return { job: job.data, lockToken };
       }
+
+      await this.removeJob({
+        orgId,
+        queueId,
+        lockToken,
+        jobId: job.data.id,
+      }).catch(() => {});
     }
-    return null;
   }
 
   async dequeueNextJobWithLock(opts: {
@@ -1407,8 +1396,7 @@ export default class QueueOperations {
     await this.checkQueueExists(orgId, queueId);
     const worker = await this.getBullWorker({ orgId, queueId });
 
-    let hasDecision = true;
-    while (hasDecision) {
+    while (true) {
       const job = await worker.getNextJob(lockToken);
 
       if (!job) {
@@ -1417,37 +1405,27 @@ export default class QueueOperations {
 
       const convertedJob = await this.legacyJobToJob(job, orgId);
 
-      // There is a race condition due to the locking mechanism where a job can
-      // be decided on but not dequeued, so we check here if the first job in the
-      // queue has a decision, and if so use the lock token to immediately
-      // remove it, then grab a new job and return to the caller. it is very
-      // unlikely that there are multiple jobs like this at the front of the
-      // queue, but not impossible.
+      // Race condition: a job can be decided but not yet dequeued.
+      // If the front job already has a decision, remove it and grab the next.
       const decision = await this.pgQueryReadReplica
         .selectFrom('manual_review_tool.manual_review_decisions')
-        .select(['decision_components']) // not really necessary to return anything
+        .select(['decision_components'])
         .where('created_at', '>=', new Date('2023-10-01'))
         .where('org_id', '=', orgId)
         .where('id', '=', jobIdToGuid(convertedJob.data.id))
         .executeTakeFirst();
 
-      hasDecision = decision !== undefined;
-
-      if (hasDecision) {
-        await this.removeJob({
-          orgId,
-          queueId,
-          lockToken,
-          jobId: convertedJob.data.id,
-        }).catch(() => {});
-        // then continue while loop
-      } else {
-        // this is the most likely case, where there is a job
-        // and it has never been decided before
+      if (decision === undefined) {
         return { job: convertedJob.data, lockToken };
       }
+
+      await this.removeJob({
+        orgId,
+        queueId,
+        lockToken,
+        jobId: convertedJob.data.id,
+      }).catch(() => {});
     }
-    return null;
   }
 
   /**

@@ -1,13 +1,10 @@
 import type { ItemSubmissionWithTypeIdentifier } from '../../itemProcessingService/makeItemSubmissionWithTypeIdentifier.js';
 
 // BullMQ dequeues the job with the LOWEST priority number first and, among
-// equal priorities, the job that arrived first. Our scores mean the opposite
-// (bigger = more urgent), so we store priority = MAX_BULL_PRIORITY - score.
+// equal priorities, the job that arrived first.
 //
-// BullMQ internally packs the priority and an arrival counter
-// into one float64. At priority 2^21 that number outgrows float64's
-// exact-integer range, the arrival counter gets rounded, and equal-priority
-// jobs stop dequeuing in arrival order. One less keeps the math exact.
+// 2^21 - 1 is the highest priority BullMQ can handle without breaking
+// FIFO tie-breaking among equal priorities.
 export const MAX_BULL_PRIORITY = 2_097_151;
 
 export const JobSortType = {
@@ -66,7 +63,12 @@ export async function getJobPriorityForItem(opts: {
     return toBullPriority(count ?? 0);
   }
 
-  return undefined;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (opts.sortType === JobSortType.FIFO) {
+    return undefined;
+  }
+
+  throw new Error(`Unrecognized sort type: ${String(opts.sortType)}`);
 }
 
 /**
@@ -85,7 +87,7 @@ export async function getJobPrioritiesForItems(opts: {
 }): Promise<ReadonlyMap<string, number>> {
   const { orgId, itemIds, sortType, deps } = opts;
 
-  if (sortType !== JobSortType.NUM_REPORTS) {
+  if (sortType === JobSortType.FIFO) {
     // Priority 0 means "no priority" to BullMQ, which moves these jobs back
     // out of the `prioritized` set and into the `wait` list. Unlike the
     // enqueue path this has to be an explicit 0 rather than `undefined`: a
@@ -93,6 +95,11 @@ export async function getJobPrioritiesForItems(opts: {
     // actively demoted, not left alone. The sweep walks oldest-first and
     // BullMQ prepends each one, so arrival order is preserved.
     return new Map(itemIds.map((itemId) => [itemId, 0]));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (sortType !== JobSortType.NUM_REPORTS) {
+    throw new Error(`Unrecognized sort type: ${String(sortType)}`);
   }
 
   const counts = await deps.getNumTimesReportedForItems({ orgId, itemIds });
