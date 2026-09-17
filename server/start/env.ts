@@ -38,7 +38,7 @@ const env = await Env.create(new URL('./', import.meta.url), {
   NOREPLY_EMAIL: Env.schema.string.optional({ format: 'email' }),
   SUPPORT_EMAIL: Env.schema.string.optional({ format: 'email' }),
   TEAM_EMAIL: Env.schema.string.optional({ format: 'email' }),
-  EMAIL_TRANSPORT: Env.schema.enum.optional(['console']),
+  EMAIL_TRANSPORT: Env.schema.enum.optional(['console'] as const),
 
   // Postgresql configuration:
   DATABASE_HOST: Env.schema.string({ format: 'host' }),
@@ -80,29 +80,20 @@ const env = await Env.create(new URL('./', import.meta.url), {
   GRAPHQL_MAX_DEPTH: Env.schema.integer.positive.optional(),
 
   // Default to `clickhouse`; ANALYTICS_ADAPTER falls back to WAREHOUSE_ADAPTER.
-  WAREHOUSE_ADAPTER: Env.schema.enum.optional([
-    'noop',
-    'clickhouse',
-    'postgresql',
-  ]),
-  ANALYTICS_ADAPTER: Env.schema.enum.optional([
-    'noop',
-    'clickhouse',
-    'postgresql',
-  ]),
+  WAREHOUSE_ADAPTER: Env.schema.enum.optional(['noop', 'clickhouse'] as const),
+  ANALYTICS_ADAPTER: Env.schema.enum.optional(['noop', 'clickhouse'] as const),
   // Legacy: use WAREHOUSE_ADAPTER and ANALYTICS_ADAPTER instead:
   DATA_WAREHOUSE_PROVIDER: Env.schema.enum.optional([
     'noop',
     'clickhouse',
-    'postgresql',
-  ]),
+  ] as const),
   // Clickhouse settings, only used when WAREHOUSE_ADAPTER or ANALYTICS_ADAPTER is clickhouse:
   CLICKHOUSE_HOST: Env.schema.string.optional({ format: 'host' }),
   CLICKHOUSE_PORT: Env.schema.integer.positive.optional(),
   CLICKHOUSE_USERNAME: Env.schema.string.optional(),
   CLICKHOUSE_PASSWORD: Env.schema.secret.optional(),
   CLICKHOUSE_DATABASE: Env.schema.string.optional(),
-  CLICKHOUSE_PROTOCOL: Env.schema.enum.optional(['https', 'http']),
+  CLICKHOUSE_PROTOCOL: Env.schema.enum.optional(['https', 'http'] as const),
   CLICKHOUSE_POOL_SIZE: Env.schema.integer.positive.optional(),
   // Zero means no retries and no delay respectively, so these allow it.
   CLICKHOUSE_INSERT_MAX_RETRIES: Env.schema.integer.nonNegative.optional(),
@@ -143,7 +134,7 @@ const env = await Env.create(new URL('./', import.meta.url), {
   // CyberTipline credentials configured in Settings → NCMEC are production
   // credentials issued by NCMEC and your integration has been approved for live
   // reporting.
-  NCMEC_ENV: Env.schema.enum.optional(['production', 'test']),
+  NCMEC_ENV: Env.schema.enum.optional(['production', 'test'] as const),
   NCMEC_DEBUG: Env.schema.boolean.optional(),
 
   // Debugging:

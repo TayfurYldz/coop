@@ -3,6 +3,7 @@ import Bottle from '@ethanresnick/bottlejs';
 import opentelemetry from '@opentelemetry/api';
 import { type ItemIdentifier } from '@roostorg/coop-types';
 import databaseConfig from '#config/database';
+import warehouseConfig from '#config/dataWarehouse';
 import redisConfig, { type RedisConnection } from '#config/redis';
 import scyllaConfig from '#config/scylla';
 import IORedis, { type Cluster } from 'ioredis';
@@ -508,25 +509,33 @@ export default async function getBottle(
   // - 'DataWarehouse' - Core queries and transactions
   // - 'DataWarehouseDialect' - Type-safe Kysely queries
   // - 'DataWarehouseAnalytics' - Bulk writes, CDC, logging
+  // The config names which connection each of these uses; turning a name into a
+  // connection is wiring, so it belongs here rather than in the config.
+  function getWarehouseConfig() {
+    return warehouseConfig.connections[warehouseConfig.warehouse.connection];
+  }
+
+  function getAnalyticsConfig() {
+    return warehouseConfig.connections[warehouseConfig.analytics.connection];
+  }
+
   bottle.factory('DataWarehouse', () => {
-    const config = DataWarehouseFactory.createConfigFromEnv();
-    const dataWarehouse = DataWarehouseFactory.createDataWarehouse(config);
+    const dataWarehouse =
+      DataWarehouseFactory.createDataWarehouse(getWarehouseConfig());
     dataWarehouse.start();
     return dataWarehouse;
   });
 
-  bottle.factory('DataWarehouseDialect', () => {
-    const config = DataWarehouseFactory.createConfigFromEnv();
-    return DataWarehouseFactory.createKyselyDialect(config);
-  });
+  bottle.factory('DataWarehouseDialect', () =>
+    DataWarehouseFactory.createKyselyDialect(getWarehouseConfig()),
+  );
 
-  bottle.factory('DataWarehouseAnalytics', (container) => {
-    const config = DataWarehouseFactory.createConfigFromEnv();
-    return DataWarehouseFactory.createAnalyticsAdapter(
-      config,
+  bottle.factory('DataWarehouseAnalytics', (container) =>
+    DataWarehouseFactory.createAnalyticsAdapter(
+      getAnalyticsConfig(),
       container.DataWarehouseDialect,
-    );
-  });
+    ),
+  );
 
   bottle.factory('ActionStatisticsAdapter', (container) => {
     return new ClickhouseActionStatisticsAdapter(
