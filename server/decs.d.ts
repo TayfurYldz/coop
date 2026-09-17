@@ -6,9 +6,6 @@ declare namespace Express {
   }
 }
 
-declare module 'homoglyph-search';
-declare module 'nilsimsa';
-
 declare interface String {
   toUpperCase<T extends string>(this: T): Uppercase<T>;
   toLowerCase<T extends string>(this: T): Lowercase<T>;
