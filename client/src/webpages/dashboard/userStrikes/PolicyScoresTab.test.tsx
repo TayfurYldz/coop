@@ -89,8 +89,10 @@ describe('PolicyScoresTab', () => {
 
     fireEvent.click(await screen.findByText('Edit Policy Scores'));
     const childRow = screen.getByText('Child policy').closest('tr');
-    expect(childRow).not.toBeNull();
-    const childSwitch = within(childRow!).getByRole('switch');
+    if (childRow === null) {
+      throw new Error('Child policy row not found');
+    }
+    const childSwitch = within(childRow).getByRole('switch');
     expect(childSwitch).not.toBeChecked();
 
     fireEvent.click(childSwitch);
