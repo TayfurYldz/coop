@@ -6,6 +6,8 @@ import '@testing-library/jest-dom/extend-expect';
 
 import PolicyScoresTab from './PolicyScoresTab';
 
+const mocks = vi.hoisted(() => ({ updatePolicy: vi.fn() }));
+
 vi.mock('@/graphql/generated', async () => {
   const actual = await vi.importActual<typeof import('@/graphql/generated')>(
     '@/graphql/generated',
@@ -37,6 +39,17 @@ vi.mock('@/graphql/generated', async () => {
           userStrikeCount: 3,
           applyUserStrikeCountConfigToChildren: false,
         },
+        {
+          __typename: 'Policy',
+          id: 'grandchild',
+          name: 'Grandchild policy',
+          parentId: 'child',
+          policyText: null,
+          enforcementGuidelines: null,
+          policyType: null,
+          userStrikeCount: 2,
+          applyUserStrikeCountConfigToChildren: false,
+        },
       ],
     },
   };
@@ -48,7 +61,7 @@ vi.mock('@/graphql/generated', async () => {
       refetch: vi.fn(),
       data,
     }),
-    useGQLUpdatePolicyMutation: () => [vi.fn()],
+    useGQLUpdatePolicyMutation: () => [mocks.updatePolicy],
   };
 });
 
@@ -65,5 +78,30 @@ describe('PolicyScoresTab', () => {
     const scoreInputs = screen.getAllByRole('spinbutton');
     expect(scoreInputs[0]).toHaveValue(4);
     expect(scoreInputs[1]).toHaveValue(3);
+  });
+  it('saves the apply-to-sub-policies toggle from the child policies table', async () => {
+    mocks.updatePolicy.mockReset();
+    render(
+      <MemoryRouter>
+        <PolicyScoresTab />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(await screen.findByText('Edit Policy Scores'));
+    const switches = screen.getAllByRole('switch');
+    expect(switches).toHaveLength(2);
+    expect(switches[1]).not.toBeChecked();
+
+    fireEvent.click(switches[1]);
+    fireEvent.click(screen.getByRole('button', { name: 'Save Policy Scores' }));
+
+    expect(mocks.updatePolicy).toHaveBeenCalledWith({
+      variables: {
+        input: expect.objectContaining({
+          id: 'child',
+          applyUserStrikeCountConfigToChildren: true,
+        }),
+      },
+    });
   });
 });

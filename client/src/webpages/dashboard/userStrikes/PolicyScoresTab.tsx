@@ -510,8 +510,12 @@ function ChildPoliciesTable(props: {
           <div className="mt-1">
             <Switch
               disabled={editingDisabled}
-              onChange={(event) => {
-                const { checked } = event.target as HTMLInputElement;
+              checked={
+                updatedPolicyScores[policy.value.id]
+                  ?.applyUserStrikeCountConfigToChildren ??
+                policy.value.applyUserStrikeCountConfigToChildren
+              }
+              onCheckedChange={(checked) => {
                 setUpdatedPolicyScores({
                   ...updatedPolicyScores,
                   [policy.value.id]: {
