@@ -162,6 +162,7 @@ export default function PolicyScoresTab() {
             }
           }),
         );
+        discardChanges(policyId);
       };
 
       // don't allow editing child policies when this is set to true
