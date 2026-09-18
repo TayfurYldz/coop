@@ -137,13 +137,9 @@ export default function PolicyScoresTab() {
       const childPolicyIds = flattenedChildPolicies.map((p) => p.value.id);
 
       const discardChanges = (policyId: string) => {
-        const filteredScores = omit(updatedPolicyScores, [
-          policyId,
-          ...childPolicyIds,
-        ]);
-        setUpdatedPolicyScores({
-          ...filteredScores,
-        });
+        setUpdatedPolicyScores((currentScores) =>
+          omit(currentScores, [policyId, ...childPolicyIds]),
+        );
       };
 
       const savePolicyScores = async (policyId: string) => {

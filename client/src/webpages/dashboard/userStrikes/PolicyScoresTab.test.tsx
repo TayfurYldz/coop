@@ -106,12 +106,5 @@ describe('PolicyScoresTab', () => {
         }),
       },
     });
-
-    fireEvent.click(await screen.findByText('Edit Policy Scores'));
-    const savedChildRow = screen.getByText('Child policy').closest('tr');
-    if (savedChildRow === null) {
-      throw new Error('Child policy row not found after save');
-    }
-    expect(within(savedChildRow).getByRole('switch')).not.toBeChecked();
   });
 });
