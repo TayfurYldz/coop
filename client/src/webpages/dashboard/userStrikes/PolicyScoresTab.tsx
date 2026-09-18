@@ -36,12 +36,6 @@ export default function PolicyScoresTab() {
     undefined,
   );
   const [updatePolicy] = useGQLUpdatePolicyMutation({
-    onCompleted: async () => {
-      // Because of the cascading policy updates (i.e. parent policies affect
-      // the children), we should refetch the whole policy tree when one is
-      // updated
-      refetchAllPolicies();
-    },
     onError: () => {
       setErrorMessage('Error saving policy. Please try again.');
     },
@@ -158,6 +152,9 @@ export default function PolicyScoresTab() {
             }
           }),
         );
+        // Because parent policy updates can cascade to children, refresh the
+        // policy tree before removing the local draft values.
+        await refetchAllPolicies();
         discardChanges(policyId);
       };
 
@@ -348,7 +345,13 @@ export default function PolicyScoresTab() {
         </div>
       );
     },
-    [editingPolicies, expandedPolicies, updatedPolicyScores, updatePolicy],
+    [
+      editingPolicies,
+      expandedPolicies,
+      refetchAllPolicies,
+      updatedPolicyScores,
+      updatePolicy,
+    ],
   );
   const errorModal = (
     <CoopModal
