@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 
@@ -88,11 +88,12 @@ describe('PolicyScoresTab', () => {
     );
 
     fireEvent.click(await screen.findByText('Edit Policy Scores'));
-    const switches = screen.getAllByRole('switch');
-    expect(switches).toHaveLength(2);
-    expect(switches[1]).not.toBeChecked();
+    const childRow = screen.getByText('Child policy').closest('tr');
+    expect(childRow).not.toBeNull();
+    const childSwitch = within(childRow!).getByRole('switch');
+    expect(childSwitch).not.toBeChecked();
 
-    fireEvent.click(switches[1]);
+    fireEvent.click(childSwitch);
     fireEvent.click(screen.getByRole('button', { name: 'Save Policy Scores' }));
 
     expect(mocks.updatePolicy).toHaveBeenCalledWith({
